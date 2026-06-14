@@ -149,10 +149,60 @@
 
   <div class="bottom-bar">
     <span class="radio-label">Radiosaray</span>
-    <button class="play-btn" aria-label="Play">
-      <svg viewBox="0 0 10 10"><polygon points="1,0 10,5 1,10"/></svg>
+    <button class="play-btn" id="playBtn" aria-label="Play">
+      <svg id="iconPlay" viewBox="0 0 10 10"><polygon points="1,0 10,5 1,10"/></svg>
+      <svg id="iconPause" viewBox="0 0 10 10" style="display:none"><rect x="1" y="0" width="3" height="10"/><rect x="6" y="0" width="3" height="10"/></svg>
     </button>
   </div>
 </div>
+
+<audio id="player"></audio>
+
+<script>
+  const tracks = [
+    'music/galate-oui.mp3',
+    'music/isaak.mp3',
+    'music/beautiful-friendship.mp3',
+    'music/line-up.mp3',
+    'music/joss-moog-wil.mp3'
+  ];
+  let current = 0;
+  const audio = document.getElementById('player');
+  const btn = document.getElementById('playBtn');
+  const iconPlay = document.getElementById('iconPlay');
+  const iconPause = document.getElementById('iconPause');
+
+  function loadAndPlay(index) {
+    audio.src = tracks[index];
+    audio.play();
+  }
+
+  audio.addEventListener('ended', () => {
+    current = (current + 1) % tracks.length;
+    loadAndPlay(current);
+  });
+
+  btn.addEventListener('click', () => {
+    if (audio.paused) {
+      if (!audio.src || audio.ended) loadAndPlay(current);
+      else audio.play();
+      iconPlay.style.display = 'none';
+      iconPause.style.display = 'block';
+    } else {
+      audio.pause();
+      iconPlay.style.display = 'block';
+      iconPause.style.display = 'none';
+    }
+  });
+
+  audio.addEventListener('play', () => {
+    iconPlay.style.display = 'none';
+    iconPause.style.display = 'block';
+  });
+  audio.addEventListener('pause', () => {
+    iconPlay.style.display = 'block';
+    iconPause.style.display = 'none';
+  });
+</script>
 </body>
 </html>
