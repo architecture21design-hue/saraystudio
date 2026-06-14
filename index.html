@@ -175,7 +175,7 @@
 
   <nav>
     <span class="nav-locked">Projects</span>
-    <a href="index.html">Studio</a>
+    <a href="#" id="studioBtn">Studio</a>
     <a href="#" id="contactBtn">Contact</a>
   </nav>
 
@@ -254,6 +254,11 @@
   contactBtn.addEventListener('click', (e) => {
     e.preventDefault();
     overlay.classList.toggle('open');
+  });
+
+  document.getElementById('studioBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    overlay.classList.remove('open');
   });
 
   audio.addEventListener('play', () => {
