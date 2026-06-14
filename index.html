@@ -114,9 +114,11 @@
       z-index: 20;
       align-items: center;
       justify-content: center;
+      pointer-events: none;
     }
 
     #contactOverlay.open { display: flex; }
+    #contactOverlay .contact-info { pointer-events: auto; }
 
     .contact-info p,
     .contact-info a {
