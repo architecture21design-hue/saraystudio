@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pool House — Mohsen Masoudnia</title>
+<link rel="stylesheet" href="styles.css" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-inner" style="gap: 0px; padding: 0px 12px; height: 34px">
+    <a class="brand" href="index.html" style="height: 36px; text-align: left; font-size: 21px">Mohsen Masoudnia</a>
+    <nav><ul class="nav-links">
+      <li><a href="profile.html">Profile</a></li>
+      <li><a href="interiors.html" class="active">Interiors</a></li>
+      <li><a href="architecture.html">Architecture</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="contacts.html">Contacts</a></li>
+      <li><a href="https://www.instagram.com/mohsen_masoodnia/" target="_blank" rel="noopener">Instagram</a></li>
+    </ul></nav>
+    <button class="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<main class="project-page" data-screen-label="Pool House">
+  <div class="project-head">
+    <a class="back" href="interiors.html" style="height: 20px">Back to Interiors</a>
+    <h1>Pool House</h1>
+    <div class="meta">Monferrato, Italy<br />2024</div>
+  </div>
+  <div class="project-gallery">
+    <img src="images/projects/pool-house/01.jpg" alt="Pool House 1" loading="lazy" />
+    <img src="images/projects/pool-house/02.jpg" alt="Pool House 2" loading="lazy" />
+    <img src="images/projects/pool-house/03.jpg" alt="Pool House 3" loading="lazy" />
+    <img src="images/projects/pool-house/04.jpg" alt="Pool House 4" loading="lazy" />
+    <img src="images/projects/pool-house/05.jpg" alt="Pool House 5" loading="lazy" />
+    <img src="images/projects/pool-house/06.jpg" alt="Pool House 6" loading="lazy" />
+    <img src="images/projects/pool-house/07.jpg" alt="Pool House 7" loading="lazy" />
+    <img src="images/projects/pool-house/08.jpg" alt="Pool House 8" loading="lazy" />
+    <img src="images/projects/pool-house/09.jpg" alt="Pool House 9" loading="lazy" />
+    <img src="images/projects/pool-house/10.jpg" alt="Pool House 10" loading="lazy" />
+    <img src="images/projects/pool-house/11.jpg" alt="Pool House 11" loading="lazy" />
+    <img src="images/projects/pool-house/12.jpg" alt="Pool House 12" loading="lazy" />
+  </div>
+</main>
+<script src="site.js"></script>
+<div id="tweaks-root"></div>
+<script type="text/babel">
+(function() {
+  const STORAGE_KEY = 'mo-proj-pool-house';
+  const initLayout = localStorage.getItem(STORAGE_KEY) || 'Masonry';
+
+  function applyLayout(layout) {
+    const g = document.querySelector('.project-gallery');
+    if (!g) return;
+    g.classList.toggle('view-grid',      layout === 'Grid');
+    g.classList.toggle('view-masonry',   layout === 'Masonry');
+    g.classList.toggle('view-justified', layout === 'Justify');
+  }
+
+  function GalleryPanel() {
+    const [layout, setLayout] = React.useState(initLayout);
+    React.useEffect(() => { applyLayout(layout); }, [layout]);
+    const onChange = (v) => { setLayout(v); localStorage.setItem(STORAGE_KEY, v); };
+    return (
+      <TweaksPanel>
+        <TweakSection label="Gallery" />
+        <TweakSelect label="Layout" value={layout} options={['Stack','Grid','Masonry','Justify']} onChange={onChange} />
+      </TweaksPanel>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<GalleryPanel />);
+})();
+</script>
+</body>
+</html>

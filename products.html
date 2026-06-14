@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Products — Mohsen Masoudnia</title>
+<meta name="description" content="Product and object design by Mohsen Masoudnia." />
+<link rel="stylesheet" href="styles.css" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+</head>
+<body>
+<header class="site-header" data-screen-label="Products">
+  <div class="nav-inner">
+    <a class="brand" href="index.html">Mohsen Masoudnia</a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="interiors.html">Interiors</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="products.html" class="active">Products</a></li>
+        <li><a href="contacts.html">Contacts</a></li>
+        <li><a href="https://www.instagram.com/mohsen_masoodnia/" target="_blank" rel="noopener">Instagram</a></li>
+      </ul>
+    </nav>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="products-list">
+
+    <article class="product-row" data-screen-label="Mokab">
+      <div class="product-text">
+        <h2 class="p-title"><a href="mokab.html">Mokab</a></h2>
+        <div class="p-year">2022</div>
+      </div>
+      <div class="product-img">
+        <img src="images/mokab.jpg" alt="Mokab" />
+      </div>
+    </article>
+
+    <article class="product-row" data-screen-label="Coco">
+      <div class="product-text">
+        <h2 class="p-title"><a href="coco.html">Coco</a></h2>
+        <div class="p-year">2021</div>
+      </div>
+      <div class="product-img">
+        <img src="images/coco.jpg" alt="Coco" />
+      </div>
+    </article>
+
+  </section>
+</main>
+
+<script src="site.js"></script>
+
+<div id="tweaks-root"></div>
+<script type="text/babel">
+const PROD_DEFAULTS = /*EDITMODE-BEGIN*/{ "layout": "Display" }/*EDITMODE-END*/;
+function ProdPanel() {
+  const [t, setTweak] = useTweaks(PROD_DEFAULTS);
+  React.useEffect(() => {
+    const s = document.querySelector('.products-list');
+    if (!s) return;
+    s.classList.toggle('view-stack', t.layout === 'Stack');
+    s.classList.toggle('view-grid',  t.layout === 'Grid');
+  }, [t.layout]);
+  return (
+    <TweaksPanel>
+      <TweakSection label="Layout" />
+      <TweakSelect label="View" value={t.layout} options={['Display','Stack','Grid']} onChange={(v)=>setTweak('layout',v)} />
+    </TweaksPanel>
+  );
+}
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<ProdPanel />);
+</script>
+</body>
+</html>
