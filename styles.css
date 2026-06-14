@@ -501,8 +501,7 @@ main { min-height: 60vh; }
   height: 44px;
   border: 1.5px solid var(--ink);
   border-radius: 50%;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(4px);
+  background: none;
   cursor: pointer;
   padding: 0;
   transition: opacity 0.2s ease;
