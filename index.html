@@ -252,15 +252,18 @@
 
   const overlay = document.getElementById('contactOverlay');
   const contactBtn = document.getElementById('contactBtn');
+  const heroMessage = document.querySelector('.hero-message');
 
   contactBtn.addEventListener('click', (e) => {
     e.preventDefault();
     overlay.classList.toggle('open');
+    heroMessage.style.display = overlay.classList.contains('open') ? 'none' : '';
   });
 
   document.getElementById('studioBtn').addEventListener('click', (e) => {
     e.preventDefault();
     overlay.classList.remove('open');
+    heroMessage.style.display = '';
   });
 
   audio.addEventListener('play', () => {
