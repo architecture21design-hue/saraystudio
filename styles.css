@@ -483,57 +483,46 @@ main { min-height: 60vh; }
 
 .player-bar {
   position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: var(--player-h);
+  bottom: 20px;
+  right: 20px;
   z-index: 200;
-  background: var(--bg);
-  border-top: 1px solid rgba(20, 20, 20, 0.16);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 8px 0 10px;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
-.player-label {
-  font-size: 14px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink);
-  cursor: pointer;
-  user-select: none;
-  transition: opacity 0.2s ease;
-}
-.player-label:hover { opacity: 0.5; }
+.player-label { display: none; }
 
 .player-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   border: 1.5px solid var(--ink);
   border-radius: 50%;
-  background: none;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(4px);
   cursor: pointer;
   padding: 0;
-  flex-shrink: 0;
   transition: opacity 0.2s ease;
 }
-.player-btn:hover { opacity: 0.5; }
-.player-btn svg { width: 10px; height: 10px; display: block; fill: var(--ink); }
+.player-btn:hover { opacity: 0.6; }
+.player-btn svg { width: 12px; height: 12px; display: block; fill: var(--ink); }
 .player-btn .icon-pause { display: none; }
 .player-bar.player-open .player-btn .icon-play  { display: none; }
 .player-bar.player-open .player-btn .icon-pause { display: block; }
 
-/* Spotify panel slides up above the bar */
+/* Spotify panel above the circle button */
 .player-panel {
   position: fixed;
-  bottom: var(--player-h);
-  left: 0;
-  width: 340px;
+  bottom: 72px;
+  right: 20px;
+  width: 300px;
   height: 0;
   overflow: hidden;
   z-index: 199;
+  border-radius: 8px;
   transition: height 0.3s ease;
 }
 .player-panel iframe {
@@ -542,12 +531,7 @@ main { min-height: 60vh; }
   border: 0;
   display: block;
 }
-.player-panel.player-panel-open {
-  height: 152px;
-  border-top: 1px solid rgba(20,20,20,0.16);
-}
-
-body { padding-bottom: var(--player-h); }
+.player-panel.player-panel-open { height: 152px; }
 
 /* ----------  Responsive  ---------- */
 @media (max-width: 880px) {
