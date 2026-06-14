@@ -107,6 +107,47 @@
       margin: 0;
     }
 
+    #contactOverlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #contactOverlay.open { display: flex; }
+
+    .contact-info p,
+    .contact-info a {
+      display: block;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      line-height: 2;
+      color: #111;
+      text-decoration: none;
+    }
+
+    .contact-info a:hover { opacity: 0.55; }
+
+    .contact-links {
+      margin-top: 16px;
+      display: flex;
+      gap: 28px;
+      justify-content: center;
+    }
+
+    .contact-links a {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #111;
+      text-decoration: none;
+    }
+
+    .contact-links a:hover { opacity: 0.55; }
+
     .play-btn {
       width: 26px;
       height: 26px;
@@ -135,8 +176,20 @@
   <nav>
     <span class="nav-locked">Projects</span>
     <a href="index.html">Studio</a>
-    <a href="contacts.html">Contact</a>
+    <a href="#" id="contactBtn">Contact</a>
   </nav>
+
+  <div id="contactOverlay" style="display:none; position:absolute; inset:0; z-index:20; display:none; align-items:center; justify-content:center; flex-direction:column; text-align:center;">
+    <div class="contact-info">
+      <p>Via Marcona 16, 20129 Milan, Italy</p>
+      <a href="mailto:STUDIOMASOUDNIA@GMAIL.COM">STUDIOMASOUDNIA@GMAIL.COM</a>
+      <a href="tel:+393429546657">+39 3429546657</a>
+      <div class="contact-links">
+        <a href="https://www.instagram.com/mohsen_masoodnia/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://wa.me/393429546657" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+    </div>
+  </div>
 
   <div class="hero-message">
     <p>This website is under construction.</p>
@@ -193,6 +246,14 @@
       iconPlay.style.display = 'block';
       iconPause.style.display = 'none';
     }
+  });
+
+  const overlay = document.getElementById('contactOverlay');
+  const contactBtn = document.getElementById('contactBtn');
+
+  contactBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    overlay.classList.toggle('open');
   });
 
   audio.addEventListener('play', () => {
