@@ -490,29 +490,9 @@ main { min-height: 60vh; }
   border-top: 1px solid rgba(20, 20, 20, 0.16);
   display: flex;
   align-items: center;
-  padding: 0 5px;
-  gap: 12px;
+  justify-content: space-between;
+  padding: 0 8px 0 10px;
 }
-
-.player-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  color: var(--ink);
-  padding: 0;
-  flex-shrink: 0;
-  transition: opacity 0.2s ease;
-}
-.player-btn:hover { opacity: 0.5; }
-.player-btn svg { width: 12px; height: 12px; display: block; fill: var(--ink); }
-.player-btn .icon-pause { display: none; }
-.player-bar.is-playing .player-btn .icon-play  { display: none; }
-.player-bar.is-playing .player-btn .icon-pause { display: block; }
 
 .player-label {
   font-size: 14px;
@@ -524,6 +504,26 @@ main { min-height: 60vh; }
   transition: opacity 0.2s ease;
 }
 .player-label:hover { opacity: 0.5; }
+
+.player-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease;
+}
+.player-btn:hover { opacity: 0.5; }
+.player-btn svg { width: 10px; height: 10px; display: block; fill: var(--ink); }
+.player-btn .icon-pause { display: none; }
+.player-bar.player-open .player-btn .icon-play  { display: none; }
+.player-bar.player-open .player-btn .icon-pause { display: block; }
 
 /* Spotify panel slides up above the bar */
 .player-panel {

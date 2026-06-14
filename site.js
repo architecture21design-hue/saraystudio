@@ -50,10 +50,11 @@
   var bar = document.createElement('div');
   bar.className = 'player-bar';
   bar.innerHTML =
+    '<span class="player-label">Saray Studio</span>' +
     '<button class="player-btn" aria-label="Toggle music player">' +
-      '<svg class="icon-music" viewBox="0 0 16 16"><polygon points="3,1 13,8 3,15"/></svg>' +
-    '</button>' +
-    '<span class="player-label">Saray Studio</span>';
+      '<svg class="icon-play"  viewBox="0 0 16 16"><polygon points="4,2 13,8 4,14"/></svg>' +
+      '<svg class="icon-pause" viewBox="0 0 16 16"><rect x="2" y="2" width="4" height="12"/><rect x="10" y="2" width="4" height="12"/></svg>' +
+    '</button>';
   document.body.appendChild(bar);
 
   // Build Spotify panel (above bar, hidden initially)
