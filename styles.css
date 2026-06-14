@@ -478,6 +478,55 @@ main { min-height: 60vh; }
   color: var(--ink-soft);
 }
 
+/* ----------  Spotify player bar  ---------- */
+:root { --player-h: 44px; }
+
+.player-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--player-h);
+  z-index: 200;
+  background: var(--bg);
+  border-top: 1px solid rgba(20, 20, 20, 0.16);
+  display: flex;
+  align-items: center;
+  padding: 0 5px;
+  gap: 12px;
+}
+
+.player-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--ink);
+  padding: 0;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease;
+}
+.player-btn:hover { opacity: 0.5; }
+.player-btn svg { width: 12px; height: 12px; display: block; fill: var(--ink); }
+.player-btn .icon-pause { display: none; }
+.player-bar.is-playing .player-btn .icon-play  { display: none; }
+.player-bar.is-playing .player-btn .icon-pause { display: block; }
+
+.player-label {
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.2s ease;
+}
+.player-label:hover { opacity: 0.5; }
+
+body { padding-bottom: var(--player-h); }
+
 /* ----------  Responsive  ---------- */
 @media (max-width: 880px) {
   :root { --pad: 22px; --nav-h: 62px; }

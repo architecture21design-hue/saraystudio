@@ -40,6 +40,57 @@
   }
 })();
 
+// ---- Spotify player bar ----
+(function () {
+  var PLAYLIST = '3rGKy7uitsyCgZubdZTucX';
+  var playing = false;
+  var loaded = false;
+
+  var bar = document.createElement('div');
+  bar.className = 'player-bar';
+  bar.innerHTML =
+    '<button class="player-btn" aria-label="Play / pause">' +
+      '<svg class="icon-play"  viewBox="0 0 16 16"><polygon points="3,1 13,8 3,15"/></svg>' +
+      '<svg class="icon-pause" viewBox="0 0 16 16"><rect x="2" y="1" width="4" height="14"/><rect x="10" y="1" width="4" height="14"/></svg>' +
+    '</button>' +
+    '<span class="player-label">Saray Studio</span>' +
+    '<iframe id="sp-iframe" src="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style="display:none" allowfullscreen></iframe>';
+  document.body.appendChild(bar);
+
+  var btn    = bar.querySelector('.player-btn');
+  var label  = bar.querySelector('.player-label');
+  var iframe = bar.querySelector('#sp-iframe');
+
+  function toggle() {
+    if (!loaded) {
+      iframe.src = 'https://open.spotify.com/embed/playlist/' + PLAYLIST + '?utm_source=generator&theme=0';
+      loaded = true;
+      iframe.addEventListener('load', function () {
+        setTimeout(function () {
+          iframe.contentWindow.postMessage(JSON.stringify({ command: 'toggle' }), '*');
+        }, 800);
+      });
+    } else {
+      iframe.contentWindow.postMessage(JSON.stringify({ command: 'toggle' }), '*');
+    }
+    playing = !playing;
+    bar.classList.toggle('is-playing', playing);
+  }
+
+  btn.addEventListener('click', toggle);
+  label.addEventListener('click', toggle);
+
+  window.addEventListener('message', function (e) {
+    try {
+      var d = JSON.parse(e.data);
+      if (d.type === 'playback_update') {
+        playing = !d.payload.isPaused;
+        bar.classList.toggle('is-playing', playing);
+      }
+    } catch (_) {}
+  });
+})();
+
 // ---- Home slideshow ----
 (function () {
   var show = document.querySelector('.slideshow');
