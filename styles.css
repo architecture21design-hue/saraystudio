@@ -525,6 +525,28 @@ main { min-height: 60vh; }
 }
 .player-label:hover { opacity: 0.5; }
 
+/* Spotify panel slides up above the bar */
+.player-panel {
+  position: fixed;
+  bottom: var(--player-h);
+  left: 0;
+  width: 340px;
+  height: 0;
+  overflow: hidden;
+  z-index: 199;
+  transition: height 0.3s ease;
+}
+.player-panel iframe {
+  width: 100%;
+  height: 152px;
+  border: 0;
+  display: block;
+}
+.player-panel.player-panel-open {
+  height: 152px;
+  border-top: 1px solid rgba(20,20,20,0.16);
+}
+
 body { padding-bottom: var(--player-h); }
 
 /* ----------  Responsive  ---------- */
