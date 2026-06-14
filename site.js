@@ -40,46 +40,43 @@
   }
 })();
 
-// ---- Spotify player bar ----
+// ---- Audio player ----
 (function () {
-  var PLAYLIST = '3rGKy7uitsyCgZubdZTucX';
-  var SP_ORIGIN = 'https://open.spotify.com';
-  var expanded = false;
+  // Tracks — replace with your MP3 paths
+  var tracks = [
+    /* { src: 'audio/track1.mp3', title: 'Track 1' }, */
+  ];
 
-  // Build bar
   var bar = document.createElement('div');
   bar.className = 'player-bar';
   bar.innerHTML =
-    '<span class="player-label">Saray Studio</span>' +
-    '<button class="player-btn" aria-label="Toggle music player">' +
+    '<button class="player-btn" aria-label="Play / pause">' +
       '<svg class="icon-play"  viewBox="0 0 16 16"><polygon points="4,2 13,8 4,14"/></svg>' +
       '<svg class="icon-pause" viewBox="0 0 16 16"><rect x="2" y="2" width="4" height="12"/><rect x="10" y="2" width="4" height="12"/></svg>' +
     '</button>';
   document.body.appendChild(bar);
 
-  // Build Spotify panel (above bar, hidden initially)
-  var panel = document.createElement('div');
-  panel.className = 'player-panel';
-  panel.innerHTML = '<iframe src="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>';
-  document.body.appendChild(panel);
+  if (!tracks.length) return; // no tracks yet — button visible but inert
 
-  var btn    = bar.querySelector('.player-btn');
-  var label  = bar.querySelector('.player-label');
-  var iframe = panel.querySelector('iframe');
-  var loaded = false;
+  var audio   = new Audio();
+  var idx     = 0;
+  var playing = false;
 
-  function toggle() {
-    expanded = !expanded;
-    bar.classList.toggle('player-open', expanded);
-    panel.classList.toggle('player-panel-open', expanded);
-    if (expanded && !loaded) {
-      iframe.src = SP_ORIGIN + '/embed/playlist/' + PLAYLIST + '?utm_source=generator&theme=0';
-      loaded = true;
-    }
+  function load(i) {
+    idx = (i + tracks.length) % tracks.length;
+    audio.src = tracks[idx].src;
   }
 
-  btn.addEventListener('click', toggle);
-  label.addEventListener('click', toggle);
+  audio.addEventListener('ended', function () { load(idx + 1); audio.play(); });
+
+  bar.querySelector('.player-btn').addEventListener('click', function () {
+    if (!audio.src) load(0);
+    playing ? audio.pause() : audio.play();
+    playing = !playing;
+    bar.classList.toggle('player-open', playing);
+  });
+
+  load(0);
 })();
 
 // ---- Home slideshow ----
