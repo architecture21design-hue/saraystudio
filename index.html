@@ -19,6 +19,7 @@
       position: relative;
       width: 100vw;
       height: 100vh;
+      height: 100svh;
       overflow: hidden;
       background: #c8c8c8;
     }
@@ -223,7 +224,7 @@
       .bottom-bar {
         left: 16px;
         right: 16px;
-        bottom: 14px;
+        bottom: calc(14px + env(safe-area-inset-bottom));
       }
     }
   </style>
