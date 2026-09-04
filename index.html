@@ -261,14 +261,12 @@
     .studio-copy p + p {
       margin-top: 1.6em;
       color: #3d3d3d;
-      font-size: clamp(13px, 1.1vw, 16px);
-      line-height: 1.95;
     }
 
     .studio-copy .l1 { transform: translateY(calc((1 - var(--pt)) * 20px)); }
     .studio-copy .l2 { transform: translateY(calc((1 - var(--pt)) * 32px)); }
 
-    .brand { letter-spacing: 0.16em; font-size: 0.86em; }
+    .brand { letter-spacing: inherit; font-size: inherit; }
 
     .scroll-hint {
       position: fixed;
@@ -311,7 +309,6 @@
       .studio-image img { height: min(78vh, 110vw); max-width: 88vw; }
       .studio-text { padding: 0 26px; }
       .studio-copy p { font-size: 14px; line-height: 1.8; }
-      .studio-copy p + p { font-size: 12.5px; }
       .studio-eyebrow { margin-bottom: 22px; }
       .scroll-hint { bottom: calc(62px + env(safe-area-inset-bottom)); }
     }
@@ -373,7 +370,7 @@
 
   <nav>
     <span class="nav-locked" id="projectsLabel">Projects</span>
-    <a href="#" id="closeStudio">Close</a>
+    <a href="#" id="closeStudio">Home</a>
     <a href="#" id="studioBtn">Studio</a>
     <a href="#" id="contactBtn">Contact</a>
   </nav>
