@@ -252,7 +252,7 @@ function buildProject(p, k) {
     var img = document.createElement('img');
     img.alt = p.name + (p.place ? ', ' + p.place : '') + ', photo ' + (i + 1);
     img.dataset.src = s;
-    img.onload = function () { place(sec); };
+    img.onload = function () { if (sec.isConnected) place(sec); };
     slot.appendChild(img);
     track.appendChild(slot);
   });
@@ -393,12 +393,15 @@ render(location.hash.slice(1));
   var saved = {};
   try { saved = JSON.parse(sessionStorage.getItem(KEY)) || {}; } catch (e) {}
   var i = saved.i || 0;
+  var pending = null; // position handed over from the homepage, until the seek has landed
   function save() {
-    try { sessionStorage.setItem(KEY, JSON.stringify({ i: i, t: audio.currentTime || 0, playing: !audio.paused })); } catch (e) {}
+    var t = pending !== null ? pending : (audio.currentTime || 0);
+    try { sessionStorage.setItem(KEY, JSON.stringify({ i: i, t: t, playing: !audio.paused })); } catch (e) {}
   }
   function load(at) {
     audio.src = TRACKS[i];
-    if (at) audio.addEventListener('loadedmetadata', function f() { audio.currentTime = at; audio.removeEventListener('loadedmetadata', f); });
+    pending = at || null;
+    if (at) audio.addEventListener('loadedmetadata', function f() { audio.currentTime = at; pending = null; audio.removeEventListener('loadedmetadata', f); });
   }
   load(saved.t);
   audio.addEventListener('ended', function () { i = (i + 1) % TRACKS.length; load(0); audio.play(); });
