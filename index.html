@@ -55,6 +55,21 @@
     nav a:hover { opacity: 0.55; }
     .nav-locked { pointer-events: none; cursor: default; }
 
+    .menu-wrap { position: relative; }
+    .menu-toggle {
+      display: flex; flex-direction: column; justify-content: center; gap: 5px;
+      width: 22px; height: 16px; padding: 0; border: 0; background: none; cursor: pointer;
+    }
+    .menu-toggle span { display: block; width: 100%; height: 1.5px; background: #111; transition: transform .25s, opacity .25s; }
+    .menu-wrap.open .menu-toggle span:nth-child(1) { transform: translateY(3.25px) rotate(45deg); }
+    .menu-wrap.open .menu-toggle span:nth-child(2) { transform: translateY(-3.25px) rotate(-45deg); }
+    .submenu {
+      position: absolute; top: 28px; left: 0; display: flex; flex-direction: column; gap: 12px;
+      min-width: 140px; padding-top: 4px; opacity: 0; pointer-events: none; transform: translateY(-6px);
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .menu-wrap.open .submenu { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
     .hero-title {
       position: absolute;
       bottom: 44px;
@@ -369,7 +384,16 @@
   <div class="hero-bg"></div>
 
   <nav>
-    <a href="projects.html">Projects</a>
+    <div class="menu-wrap" id="menuWrap">
+      <button type="button" class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <div class="submenu" id="submenu">
+        <a href="projects.html#interiors">Interiors</a>
+        <a href="projects.html#architecture">Architecture</a>
+        <a href="projects.html#products">Products</a>
+      </div>
+    </div>
     <a href="#" id="closeStudio">Home</a>
     <a href="#" id="studioBtn">Studio</a>
     <a href="#" id="contactBtn">Contact</a>
@@ -477,6 +501,24 @@
   const contactBtn = document.getElementById('contactBtn');
   const heroMessage = document.querySelector('.hero-message');
 
+  const menuWrap = document.getElementById('menuWrap');
+  const menuToggle = document.getElementById('menuToggle');
+  menuToggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const open = menuWrap.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('click', (e) => {
+    if (menuWrap.classList.contains('open') && !menuWrap.contains(e.target)) {
+      menuWrap.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { menuWrap.classList.remove('open'); menuToggle.setAttribute('aria-expanded', 'false'); }
+  });
+
   contactBtn.addEventListener('click', (e) => {
     e.preventDefault();
     shutStudio();
@@ -518,6 +560,8 @@
 
   studioBtn.addEventListener('click', (e) => { e.preventDefault(); openStudio(); });
   closeStudio.addEventListener('click', (e) => { e.preventDefault(); shutStudio(); });
+
+  if (location.hash === '#studio') openStudio();
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') shutStudio(); });
 
   studioProgress();

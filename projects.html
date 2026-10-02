@@ -25,16 +25,27 @@
   a { color: inherit; text-decoration: none; }
   button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 
-  /* ---------- fixed frame: name + menu, links, radio, info ---------- */
-  .brand-col { position: fixed; top: 34px; left: var(--edge); z-index: 20; }
-  .brand { display: block; font-size: 22px; letter-spacing: 0.01em; }
-  .menu { list-style: none; margin-top: 18px; padding-left: 22px; }
-  .menu li { font-size: 14px; line-height: 1.85; letter-spacing: 0.02em; }
-  .menu a, .links a { color: var(--ink-soft); transition: color .2s; }
-  .menu a:hover, .menu a.active, .links a:hover, .links a.active { color: var(--ink); }
+  /* ---------- fixed frame: nav, radio, info ---------- */
+  .topnav { position: fixed; top: 30px; left: var(--edge); z-index: 30; display: flex; align-items: center; gap: 26px; }
+  .topnav a { font-size: 13px; letter-spacing: 0.04em; color: var(--ink-soft); transition: color .2s; }
+  .topnav a:hover, .topnav a.active { color: var(--ink); }
 
-  .links { position: fixed; left: var(--edge); bottom: 34px; z-index: 20; display: flex; gap: 26px; }
-  .links a { font-size: 13px; letter-spacing: 0.04em; }
+  .menu-wrap { position: relative; }
+  .menu-toggle {
+    display: flex; flex-direction: column; justify-content: center; gap: 5px;
+    width: 22px; height: 16px; padding: 0; border: 0; background: none; cursor: pointer;
+  }
+  .menu-toggle span { display: block; width: 100%; height: 1.5px; background: var(--ink); transition: transform .25s, opacity .25s; }
+  .menu-wrap.open .menu-toggle span:nth-child(1) { transform: translateY(3.25px) rotate(45deg); }
+  .menu-wrap.open .menu-toggle span:nth-child(2) { transform: translateY(-3.25px) rotate(-45deg); }
+  .submenu {
+    position: absolute; top: 28px; left: 0; display: flex; flex-direction: column; gap: 12px;
+    min-width: 150px; padding-top: 4px; opacity: 0; pointer-events: none; transform: translateY(-6px);
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .menu-wrap.open .submenu { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .submenu a { font-size: 13px; letter-spacing: 0.04em; color: var(--ink-soft); transition: color .2s; }
+  .submenu a:hover, .submenu a.active { color: var(--ink); }
 
   .radio { position: fixed; top: 30px; right: var(--edge); z-index: 20; display: flex; align-items: center; gap: 12px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
   .radio button { width: 30px; height: 30px; border: 1px solid var(--ink); border-radius: 50%; display: grid; place-items: center; }
@@ -51,15 +62,9 @@
   .info button { font-size: 13px; color: var(--ink-soft); transition: color .2s; }
   .info button:hover { color: var(--ink); }
   /* bigger finger targets without moving anything */
-  .links a, .info button { position: relative; }
-  .links a::after, .info button::after { content: ''; position: absolute; inset: -14px -8px; }
+  .topnav a, .submenu a, .info button { position: relative; }
+  .topnav a::after, .submenu a::after, .info button::after { content: ''; position: absolute; inset: -14px -8px; }
   body.page .info { opacity: 0; pointer-events: none; }
-
-  .burger { display: none; position: fixed; top: 26px; right: 14px; z-index: 30; padding: 8px; }
-  .burger span { display: block; width: 22px; height: 1.5px; background: var(--ink); margin: 5px 0; transition: transform .3s, opacity .3s; }
-  body.menu-open .burger span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-  body.menu-open .burger span:nth-child(2) { opacity: 0; }
-  body.menu-open .burger span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
   /* ---------- gallery views: one project per screen, photos in a sideways row ---------- */
   .view { position: fixed; inset: 0; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; opacity: 0; transition: opacity .35s ease; }
@@ -94,13 +99,9 @@
   .grid img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .2s; }
   .grid button:hover img { opacity: .75; }
 
-  /* ---------- profile + contact ---------- */
+  /* ---------- contact ---------- */
   .page-view { position: fixed; inset: 0; overflow-y: auto; display: flex; align-items: center; justify-content: center; padding: 120px var(--edge) 100px; opacity: 0; transition: opacity .35s ease; }
   .page-view.ready { opacity: 1; }
-  .profile { display: flex; align-items: center; gap: 6vw; max-width: 1040px; }
-  .profile img { height: min(64vh, 560px); width: auto; max-width: 40vw; object-fit: cover; display: block; flex: none; }
-  .profile h1 { font-size: 17px; font-weight: 400; margin-bottom: 18px; }
-  .profile p { font-size: 14px; line-height: 1.7; max-width: 380px; margin-bottom: 12px; }
   .contact { text-align: center; font-size: 17px; line-height: 2; }
   .contact .label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
   .contact a:hover { color: var(--ink-soft); }
@@ -108,23 +109,15 @@
   /* ---------- phone ---------- */
   @media (max-width: 760px) {
     :root { --edge: 20px; }
-    .brand-col { top: 26px; }
-    .brand { font-size: 19px; }
-    .menu { display: none; }
-    .burger { display: block; }
+    .topnav { top: 26px; }
     .radio { top: auto; bottom: 22px; right: var(--edge); }
     .radio span { display: none; }
-    body.menu-open .menu { display: block; position: fixed; inset: 0; background: var(--bg); padding: 96px var(--edge) 0; margin: 0; z-index: -1; }
-    body.menu-open .menu li { font-size: 22px; line-height: 1.7; }
     /* photo uses the full gap between the name bar and the project info */
     .track { top: 92px; bottom: 200px; gap: 4vw; }
     .tag { top: 66px; }
     .info { width: auto; left: var(--edge); bottom: 68px; }
     .info .name { font-size: 16px; }
-    .links { bottom: 28px; }
     .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .profile { flex-direction: column; gap: 28px; align-items: flex-start; }
-    .profile img { height: auto; width: 100%; max-width: none; }
     .page-view { align-items: flex-start; -webkit-mask-image: linear-gradient(to bottom, transparent 64px, #000 104px, #000 calc(100% - 96px), transparent calc(100% - 64px)); mask-image: linear-gradient(to bottom, transparent 64px, #000 104px, #000 calc(100% - 96px), transparent calc(100% - 64px)); }
   }
 
@@ -139,15 +132,21 @@
 </head>
 <body>
 
-<div class="brand-col">
-  <a class="brand" href="index.html">Saray Studio</a>
-  <ul class="menu">
-    <li><a href="#interiors" data-route="interiors">Interiors</a></li>
-    <li><a href="#products" data-route="products">Products</a></li>
-    <li><a href="#architecture" data-route="architecture">Architecture</a></li>
-  </ul>
-</div>
-<button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+<nav class="topnav">
+  <div class="menu-wrap" id="menuWrap">
+    <button type="button" class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+    <div class="submenu" id="submenu">
+      <a href="#interiors" data-route="interiors">Interiors</a>
+      <a href="#architecture" data-route="architecture">Architecture</a>
+      <a href="#products" data-route="products">Products</a>
+    </div>
+  </div>
+  <a href="index.html">Home</a>
+  <a href="index.html#studio">Studio</a>
+  <a href="#contact" data-route="contact">Contact</a>
+</nav>
 
 <div class="radio" id="radio">
   <span>Radio Saray</span>
@@ -166,12 +165,6 @@
   <div class="year"></div>
   <div class="row"><button type="button" id="viewAll">View all</button><span class="count"></span></div>
 </div>
-
-<nav class="links">
-  <a href="#profile" data-route="profile">Profile</a>
-  <a href="#contact" data-route="contact">Contact</a>
-  <a href="https://www.instagram.com/mohsen_masoodnia/" target="_blank" rel="noopener">Instagram</a>
-</nav>
 
 <div class="all" id="all" aria-hidden="true">
   <div class="all-head"><span class="name"></span><button type="button" id="closeAll">Close</button></div>
@@ -261,7 +254,7 @@ var GALLERIES = {
     { name: 'Coco',  place: 'Product', year: '2021', dir: 'coco',  n: 1 }
   ]
 };
-var ROUTES = ['interiors', 'architecture', 'products', 'profile', 'contact'];
+var ROUTES = ['interiors', 'architecture', 'products', 'contact'];
 
 function photos(p) {
   if (!p.list) {
@@ -280,10 +273,11 @@ function render(r) {
   if (ROUTES.indexOf(r) < 0) r = 'interiors';
   route = r;
   document.querySelectorAll('[data-route]').forEach(function (a) { a.classList.toggle('active', a.dataset.route === r); });
-  document.body.classList.remove('menu-open', 'all-open');
+  document.body.classList.remove('all-open');
+  menuWrap.classList.remove('open');
   if (io) io.disconnect();
   stage.innerHTML = '';
-  if (r === 'profile' || r === 'contact') return renderPage(r);
+  if (r === 'contact') return renderPage(r);
   document.body.classList.remove('page');
   list = GALLERIES[r];
   current = 0;
@@ -310,15 +304,7 @@ function renderPage(r) {
   document.body.classList.add('page');
   var el = document.createElement('main');
   el.className = 'page-view';
-  el.innerHTML = r === 'profile'
-    ? '<section class="profile"><img src="images/profile.jpg" alt="Mohsen Masoudnia">' +
-        '<div><h1>Mohsen Masoudnia</h1>' +
-        '<p>Is an architect and interior designer with a strong foundation in both architectural technology and urban planning. Born in 1992 in Iran, he began his academic journey with a Bachelor’s degree in Technology of Architecture before moving to Italy to complete a Master’s in Architecture and Urban Planning at the Politecnico di Milano.</p>' +
-        '<p>Following his studies, he collaborated with some architecture and interior design studios in Milan, contributing to a variety of projects and creative initiatives.</p>' +
-        '<p>Today, he leads his own independent practice, focusing on private architectural and interior design projects across Italy.</p>' +
-        '<p>His approach is rooted in a comprehensive understanding of spatial design, with a focus on timeless aesthetics, contextual harmony, and meticulous attention to detail.</p>' +
-        '</div></section>'
-    : '<section class="contact"><div class="label">Write to us</div><a href="mailto:Info@saraystudio.it">Info@saraystudio.it</a></section>';
+  el.innerHTML = '<section class="contact"><div class="label">Write to us</div><a href="mailto:Info@saraystudio.it">Info@saraystudio.it</a></section>';
   stage.appendChild(el);
   requestAnimationFrame(function () { el.classList.add('ready'); });
 }
@@ -479,15 +465,27 @@ document.getElementById('viewAll').onclick = openAll;
 document.getElementById('closeAll').onclick = closeAll;
 
 /* ================= keyboard + menu ================= */
+var menuWrap = document.getElementById('menuWrap');
+var menuToggle = document.getElementById('menuToggle');
+menuToggle.onclick = function (e) {
+  e.stopPropagation();
+  var open = menuWrap.classList.toggle('open');
+  menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+};
+document.addEventListener('click', function (e) {
+  if (menuWrap.classList.contains('open') && !menuWrap.contains(e.target)) {
+    menuWrap.classList.remove('open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+  }
+});
 document.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') { closeAll(); document.body.classList.remove('menu-open'); return; }
+  if (e.key === 'Escape') { closeAll(); menuWrap.classList.remove('open'); menuToggle.setAttribute('aria-expanded', 'false'); return; }
   if (document.body.classList.contains('all-open') || document.body.classList.contains('page')) return;
   if (e.key === 'ArrowRight') step(current, 1);
   if (e.key === 'ArrowLeft') step(current, -1);
   if (e.key === 'ArrowDown') { e.preventDefault(); goProject(current + 1); }
   if (e.key === 'ArrowUp') { e.preventDefault(); goProject(current - 1); }
 });
-document.querySelector('.burger').onclick = function () { document.body.classList.toggle('menu-open'); };
 window.addEventListener('hashchange', function () { render(location.hash.slice(1)); });
 render(location.hash.slice(1));
 
