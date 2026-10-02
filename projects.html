@@ -50,6 +50,9 @@
   .info .count { font-size: 12px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
   .info button { font-size: 13px; color: var(--ink-soft); transition: color .2s; }
   .info button:hover { color: var(--ink); }
+  /* bigger finger targets without moving anything */
+  .links a, .info button { position: relative; }
+  .links a::after, .info button::after { content: ''; position: absolute; inset: -14px -8px; }
   body.page .info { opacity: 0; pointer-events: none; }
 
   .burger { display: none; position: fixed; top: 26px; right: 14px; z-index: 30; padding: 8px; }
@@ -67,12 +70,17 @@
   .project[data-zone="right"] { cursor: var(--cur-right); }
   .project[data-zone="up"]    { cursor: var(--cur-up); }
   .project[data-zone="down"]  { cursor: var(--cur-down); }
-  .track { position: absolute; top: 18%; height: 64%; left: 0; display: flex; gap: 5vw; transition: transform .75s var(--ease); will-change: transform; }
+  /* photo zone stays clear of the name + menu above and the project info below */
+  .track { position: absolute; top: max(18%, 184px); bottom: max(18%, 158px); left: 0; display: flex; gap: 5vw; transition: transform .75s var(--ease); will-change: transform; }
   .slot { height: 100%; flex: none; display: flex; align-items: center; opacity: 0; transition: opacity .6s ease; }
   .slot.on { opacity: 1; }
   .slot.peek { opacity: .28; }
+  /* the peeking photo fades out to nothing towards the right edge; --solid animates so it eases in when it becomes current */
+  @property --solid { syntax: '<percentage>'; inherits: false; initial-value: 100%; }
+  .slot img { --solid: 100%; -webkit-mask-image: linear-gradient(to right, #000 var(--solid), transparent calc(var(--solid) + 85%)); mask-image: linear-gradient(to right, #000 var(--solid), transparent calc(var(--solid) + 85%)); transition: --solid .6s ease; }
+  .slot.peek img { --solid: 0%; }
   .slot img { height: 100%; width: auto; max-width: calc(100vw - 2 * var(--edge)); object-fit: contain; display: block; user-select: none; -webkit-user-drag: none; }
-  .tag { position: absolute; top: calc(18% - 26px); left: 50%; transform: translateX(-50%); font-size: 12px; font-style: italic; color: var(--ink-soft); }
+  .tag { position: absolute; top: calc(max(18%, 184px) - 26px); left: 50%; transform: translateX(-50%); font-size: 12px; font-style: italic; color: var(--ink-soft); }
 
   /* ---------- view all ---------- */
   .all { position: fixed; inset: 0; z-index: 40; background: var(--bg); overflow-y: auto; padding: 96px var(--edge) 80px; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
@@ -108,14 +116,24 @@
     .radio span { display: none; }
     body.menu-open .menu { display: block; position: fixed; inset: 0; background: var(--bg); padding: 96px var(--edge) 0; margin: 0; z-index: -1; }
     body.menu-open .menu li { font-size: 22px; line-height: 1.7; }
-    .track { top: 20%; height: 48%; gap: 4vw; }
+    /* photo uses the full gap between the name bar and the project info */
+    .track { top: 92px; bottom: 200px; gap: 4vw; }
+    .tag { top: 66px; }
     .info { width: auto; left: var(--edge); bottom: 68px; }
     .info .name { font-size: 16px; }
     .links { bottom: 28px; }
     .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
     .profile { flex-direction: column; gap: 28px; align-items: flex-start; }
     .profile img { height: auto; width: 100%; max-width: none; }
-    .page-view { align-items: flex-start; }
+    .page-view { align-items: flex-start; -webkit-mask-image: linear-gradient(to bottom, transparent 64px, #000 104px, #000 calc(100% - 96px), transparent calc(100% - 64px)); mask-image: linear-gradient(to bottom, transparent 64px, #000 104px, #000 calc(100% - 96px), transparent calc(100% - 64px)); }
+  }
+
+  /* short screens (phone held sideways, small laptop windows): tall photo, side columns kept clear */
+  @media (min-width: 761px) and (max-height: 620px) {
+    .track { top: 56px; bottom: 44px; }
+    .slot img { max-width: calc(100vw - 560px); }
+    .slot.peek { opacity: 0; }
+    .tag { top: 32px; }
   }
 </style>
 </head>
@@ -162,12 +180,74 @@
 
 <script>
 /* ================= content ================= */
+var DIMENSIONS = {"images/projects/casa-monastero/01.jpg":[1600,1132],
+  "images/projects/casa-monastero/02.jpg":[1131,1600],"images/projects/casa-monastero/03.jpg":[1600,1132],
+  "images/projects/coco/01.jpg":[1600,1144],"images/projects/mokab/01.jpg":[1484,1600],
+  "images/projects/mokab/02.jpg":[1445,1600],"images/projects/pool-house/01.jpg":[1600,1091],
+  "images/projects/pool-house/02.jpg":[1143,1600],"images/projects/pool-house/03.jpg":[1143,1600],
+  "images/projects/pool-house/04.jpg":[1143,1600],"images/projects/pool-house/05.jpg":[1143,1600],
+  "images/projects/pool-house/06.jpg":[1143,1600],"images/projects/pool-house/07.jpg":[1600,1143],
+  "images/projects/pool-house/08.jpg":[1143,1600],"images/projects/pool-house/09.jpg":[1143,1600],
+  "images/projects/pool-house/10.jpg":[1600,1143],"images/projects/pool-house/11.jpg":[1143,1600],
+  "images/projects/pool-house/12.jpg":[1200,1600],"images/projects/pool-house/13.jpg":[1143,1600],
+  "images/projects/private-club-milano/01.jpg":[1600,1600],"images/projects/private-club-milano/02.jpg":[1600,1600],
+  "images/projects/private-club-milano/03.jpg":[1600,1600],"images/projects/private-club-milano/04.jpg":[1600,1600],
+  "images/projects/private-residence-bergamo/01.jpg":[1376,768],
+  "images/projects/private-residence-bergamo/02.jpg":[1376,768],
+  "images/projects/private-residence-bergamo/03.jpg":[1376,768],
+  "images/projects/private-residence-bergamo/04.jpg":[1168,912],
+  "images/projects/private-residence-bergamo/05.jpg":[816,1312],
+  "images/projects/private-residence-milano/01.jpg":[1376,768],
+  "images/projects/private-residence-milano/02.jpg":[1376,768],
+  "images/projects/private-residence-milano/03.jpg":[1376,768],
+  "images/projects/private-residence-milano/04.jpg":[1376,768],
+  "images/projects/private-residence-milano/05.jpg":[928,1152],
+  "images/projects/private-residence-milano/06.jpg":[1376,768],
+  "images/projects/private-residence-milano/07.jpg":[1376,768],"images/projects/scogliera/01.jpg":[1143,1600],
+  "images/projects/scogliera/02.jpg":[1143,1600],"images/projects/scogliera/03.jpg":[1091,1600],
+  "images/projects/scogliera/04.jpg":[1143,1600],"images/projects/scogliera/05.jpg":[1143,1600],
+  "images/projects/scogliera/06.jpg":[1143,1600],"images/projects/scogliera/07.jpg":[1143,1600],
+  "images/projects/scogliera/08.jpg":[1143,1600],"images/projects/scogliera/09.jpg":[1143,1600],
+  "images/projects/scogliera/10.jpg":[1143,1600],"images/projects/scogliera/11.jpg":[1116,1600],
+  "images/projects/scogliera/12.jpg":[1143,1600],"images/projects/scogliera/13.jpg":[1143,1600],
+  "images/projects/settembrini/01.jpg":[1600,1200],"images/projects/settembrini/02.jpg":[1600,1067],
+  "images/projects/settembrini/03.jpg":[768,1152],"images/projects/settembrini/04.jpg":[1131,1600],
+  "images/projects/settembrini/05.jpg":[1131,1600],"images/projects/settembrini/06.jpg":[1600,1312],
+  "images/projects/settembrini/07.jpg":[1600,1311],"images/projects/settembrini/08.jpg":[1131,1600],
+  "images/projects/settembrini/09.jpg":[1131,1600],"images/projects/settembrini/10.jpg":[1131,1600],
+  "images/projects/settembrini/11.jpg":[1600,1131],"images/projects/settembrini/12.jpg":[1132,1600],
+  "images/projects/settembrini/13.jpg":[1132,1600],"images/projects/settembrini/14.jpg":[1132,1600],
+  "images/projects/settembrini/15.jpg":[1131,1600],"images/projects/settembrini/16.jpg":[1132,1600],
+  "images/projects/torre-23/01.jpg":[1490,918],"images/projects/torre-23/02.jpg":[1600,938],
+  "images/projects/torre-23/03.jpg":[1600,944],"images/projects/torre-23/04.jpg":[1600,960],
+  "images/projects/torre-23/05.jpg":[1600,900],"images/projects/torre-23/06.jpg":[1600,944],
+  "images/projects/villa-meygoon/01.jpg":[1600,900],"images/projects/villa-meygoon/02.jpg":[1600,900],
+  "images/projects/villa-meygoon/03.jpg":[1600,900],"images/projects/villa-meygoon/04.jpg":[1600,900],
+  "images/projects/villa-meygoon/05.jpg":[1600,900],"images/projects/villa-meygoon/06.jpg":[1600,900],
+  "images/projects/villa-meygoon/07.jpg":[1600,900],"images/projects/villa-meygoon/08.jpg":[1600,900],
+  "images/projects/villa-mombue/01.jpg":[1600,904],"images/projects/villa-mombue/02.jpg":[1600,900],
+  "images/projects/villa-mombue/03.jpg":[1600,900],"images/projects/villa-mombue/04.jpg":[788,1079],
+  "images/projects/villa-mombue/05.jpg":[1600,900],"images/projects/villa-mombue/06.jpg":[1600,900],
+  "images/projects/villa-mombue/07.jpg":[1600,900],"images/projects/villa-mombue/08.jpg":[1600,900],
+  "images/projects/villa-mombue/09.jpg":[1600,900],"images/projects/villa-mombue/10.jpg":[1250,1150],
+  "images/projects/villa-mombue/11.jpg":[1600,900],"images/projects/villa-mombue/12.jpg":[1600,900],
+  "images/projects/villa-mombue/13.jpg":[1600,900],"images/projects/villa-mombue/14.jpg":[1600,900],
+  "images/projects/villa-monastero/01.jpg":[1091,1600],"images/projects/villa-monastero/02.jpg":[1091,1600],
+  "images/projects/villa-monastero/03.jpg":[1091,1600],"images/projects/villa-monastero/04.jpg":[1091,1600],
+  "images/projects/villa-monastero/05.jpg":[1091,1600],"images/projects/villa-monastero/06.jpg":[1091,1600],
+  "images/projects/villa-monastero/07.jpg":[1091,1600],"images/projects/villa-monastero/08.jpg":[1091,1600],
+  "images/projects/villa-monastero/09.jpg":[1280,1600],"images/projects/villa-monastero/10.jpg":[1200,1600],
+  "images/projects/villa-monastero/11.jpg":[1143,1600],"images/villa-terra.jpg":[1600,900]};
+
 var GALLERIES = {
   interiors: [
-    { name: 'Pool House',      place: 'Monferrato, Italy', year: '2024', dir: 'pool-house',      n: 12 },
-    { name: 'Villa Monastero', place: 'Monferrato, Italy', year: '2024', dir: 'villa-monastero', n: 14 },
-    { name: 'Settembrini 9',   place: 'Milano, Italy',     year: '2025', dir: 'settembrini',     n: 16, note: 'In progress', credit: 'With CIVICO 64' },
-    { name: 'Scogliera 84',    place: 'Liguria, Italy',    year: '2025', dir: 'scogliera',       n: 5,  note: 'In progress' },
+    { name: 'Pool House',        place: 'Monferrato, Italy', year: '2024', dir: 'pool-house',               n: 13, credit: 'Photos Nicolò Panzeri' },
+    { name: 'Villa Monastero',   place: 'Monferrato, Italy', year: '2024', dir: 'villa-monastero',          n: 11 },
+    { name: 'Scogliera 84',      place: 'Liguria, Italy',    year: '2025', dir: 'scogliera',                n: 13 },
+    { name: 'Private Residence', place: 'Milano, Italy',     year: '2025', dir: 'private-residence-milano', n: 7 },
+    { name: 'Private Club',      place: 'Milano, Italy',     year: '2025', dir: 'private-club-milano',      n: 4 },
+    { name: 'Private Residence', place: 'Bergamo, Italy',    year: '2026', dir: 'private-residence-bergamo', n: 5 },
+    { name: 'Settembrini 9',     place: 'Milano, Italy',     year: '2025', dir: 'settembrini',              n: 16, note: 'In progress', credit: 'With CIVICO 64' },
     { name: 'Torre 23',        place: 'Milano, Italy',     year: '2023', dir: 'torre-23',        n: 6 },
     { name: 'Casa Monastero',  place: 'Monferrato, Italy', year: '2024', dir: 'casa-monastero',  n: 3 }
   ],
@@ -252,6 +332,9 @@ function buildProject(p, k) {
     var img = document.createElement('img');
     img.alt = p.name + (p.place ? ', ' + p.place : '') + ', photo ' + (i + 1);
     img.dataset.src = s;
+    // reserve the photo's real shape before it downloads, so the track is laid out
+    // correctly from the first frame instead of jumping once the image arrives
+    if (DIMENSIONS[s]) img.style.aspectRatio = DIMENSIONS[s][0] + ' / ' + DIMENSIONS[s][1];
     img.onload = function () { if (sec.isConnected) place(sec); };
     slot.appendChild(img);
     track.appendChild(slot);
@@ -288,6 +371,7 @@ function buildProject(p, k) {
   });
 
   load(sec, p);
+  place(sec, true);
   return sec;
 }
 
@@ -301,7 +385,7 @@ function load(sec, p) {
 }
 
 // slide the row so the current photo sits in the middle; the next one peeks in, faded
-function place(sec) {
+function place(sec, instant) {
   var p = list[+sec.dataset.k];
   var slots = sec.querySelectorAll('.slot');
   slots.forEach(function (s, i) {
@@ -311,16 +395,36 @@ function place(sec) {
   var cur = slots[p.idx];
   if (!cur) return;
   var x = sec.clientWidth / 2 - (cur.offsetLeft + cur.offsetWidth / 2);
-  sec.querySelector('.track').style.transform = 'translateX(' + x + 'px)';
+  var track = sec.querySelector('.track');
+  // first placement of a project (before it's ever been seen): snap instantly,
+  // no slide-in from the default left-aligned layout
+  if (instant) {
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(' + x + 'px)';
+    track.offsetHeight; // flush so the transition is really off for this frame
+    track.style.transition = '';
+  } else {
+    track.style.transform = 'translateX(' + x + 'px)';
+  }
 }
 
 function show(k, i) {
   var p = list[k], n = photos(p).length;
   p.idx = (i + n) % n;
+  if (k === current) paintInfo();
   var sec = view.children[k];
   load(sec, p);
-  place(sec);
-  if (k === current) paintInfo();
+  // the counter above updates right away, but the photo itself only swaps once
+  // the new one has actually downloaded, so the current photo never drops out
+  // to a blank gap while the next one is still loading on a slower connection
+  var img = sec.querySelectorAll('img')[p.idx];
+  if (img && img.complete && img.naturalWidth) {
+    place(sec);
+  } else if (img) {
+    img.addEventListener('load', function onReady() {
+      if (sec.isConnected && list[+sec.dataset.k].idx === p.idx) place(sec);
+    }, { once: true });
+  }
 }
 function step(k, d) { show(k, list[k].idx + d); }
 
