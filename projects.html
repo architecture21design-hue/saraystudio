@@ -26,7 +26,7 @@
   button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 
   /* ---------- fixed frame: nav, radio, info ---------- */
-  .topnav { position: fixed; top: 30px; left: var(--edge); z-index: 30; display: flex; align-items: center; gap: 26px; }
+  .topnav { position: fixed; top: 30px; left: var(--edge); right: var(--edge); z-index: 30; display: flex; justify-content: space-between; align-items: center; }
   .topnav a { font-size: 13px; letter-spacing: 0.04em; color: var(--ink-soft); transition: color .2s; }
   .topnav a:hover, .topnav a.active { color: var(--ink); }
 
@@ -47,7 +47,7 @@
   .submenu a { font-size: 13px; letter-spacing: 0.04em; color: var(--ink-soft); transition: color .2s; }
   .submenu a:hover, .submenu a.active { color: var(--ink); }
 
-  .radio { position: fixed; top: 30px; right: var(--edge); z-index: 20; display: flex; align-items: center; gap: 12px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .radio { position: fixed; top: 76px; right: var(--edge); z-index: 20; display: flex; align-items: center; gap: 12px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
   .radio button { width: 30px; height: 30px; border: 1px solid var(--ink); border-radius: 50%; display: grid; place-items: center; }
   .radio svg { width: 10px; height: 10px; fill: var(--ink); }
   .radio .pause { display: none; }
