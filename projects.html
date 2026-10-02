@@ -292,9 +292,14 @@ function render(r) {
   list.forEach(function (p, k) { view.appendChild(buildProject(p, k)); });
   stage.appendChild(view);
   io = new IntersectionObserver(function (entries) {
+    // a single callback batch can report more than one section as intersecting
+    // at once (seen on a slow first load, before layout has fully settled) —
+    // take the one that's actually most visible, not just the last one listed
+    var best = null;
     entries.forEach(function (e) {
-      if (e.isIntersecting) { current = +e.target.dataset.k; paintInfo(); }
+      if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) best = e;
     });
+    if (best) { current = +best.target.dataset.k; paintInfo(); }
   }, { root: view, threshold: 0.6 });
   Array.prototype.forEach.call(view.children, function (s) { io.observe(s); });
   paintInfo();
