@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Saray Studio</title>
+<meta name="description" content="Interiors, architecture and products by Saray Studio, Milan." />
+<style>
+  :root {
+    --ink: #1c1c1c;
+    --ink-soft: #8a8a8a;
+    --bg: #fdfdfb;
+    --edge: 40px;
+    --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --ease: cubic-bezier(.65, 0, .35, 1);
+    /* our own thin chevrons, used as the mouse cursor over each zone */
+    --cur-left:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><polyline points='19,7 10,16 19,25' fill='none' stroke='%231c1c1c' stroke-width='1.3'/></svg>") 16 16, w-resize;
+    --cur-right: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><polyline points='13,7 22,16 13,25' fill='none' stroke='%231c1c1c' stroke-width='1.3'/></svg>") 16 16, e-resize;
+    --cur-up:    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><polyline points='7,19 16,10 25,19' fill='none' stroke='%231c1c1c' stroke-width='1.3'/></svg>") 16 16, n-resize;
+    --cur-down:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><polyline points='7,13 16,22 25,13' fill='none' stroke='%231c1c1c' stroke-width='1.3'/></svg>") 16 16, s-resize;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+  body { overflow: hidden; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+  /* ---------- fixed frame: name + menu, links, radio, info ---------- */
+  .brand-col { position: fixed; top: 34px; left: var(--edge); z-index: 20; }
+  .brand { display: block; font-size: 22px; letter-spacing: 0.01em; }
+  .menu { list-style: none; margin-top: 18px; padding-left: 22px; }
+  .menu li { font-size: 14px; line-height: 1.85; letter-spacing: 0.02em; }
+  .menu a, .links a { color: var(--ink-soft); transition: color .2s; }
+  .menu a:hover, .menu a.active, .links a:hover, .links a.active { color: var(--ink); }
+
+  .links { position: fixed; left: var(--edge); bottom: 34px; z-index: 20; display: flex; gap: 26px; }
+  .links a { font-size: 13px; letter-spacing: 0.04em; }
+
+  .radio { position: fixed; top: 30px; right: var(--edge); z-index: 20; display: flex; align-items: center; gap: 12px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .radio button { width: 30px; height: 30px; border: 1px solid var(--ink); border-radius: 50%; display: grid; place-items: center; }
+  .radio svg { width: 10px; height: 10px; fill: var(--ink); }
+  .radio .pause { display: none; }
+  .radio.playing .play { display: none; }
+  .radio.playing .pause { display: block; }
+
+  .info { position: fixed; right: var(--edge); bottom: 34px; z-index: 20; width: 220px; font-size: 14px; line-height: 1.45; transition: opacity .3s; }
+  .info .name { font-size: 17px; }
+  .info .year { margin-top: 12px; }
+  .info .row { display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; }
+  .info .count { font-size: 12px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .info button { font-size: 13px; color: var(--ink-soft); transition: color .2s; }
+  .info button:hover { color: var(--ink); }
+  /* bigger finger targets without moving anything */
+  .links a, .info button { position: relative; }
+  .links a::after, .info button::after { content: ''; position: absolute; inset: -14px -8px; }
+  body.page .info { opacity: 0; pointer-events: none; }
+
+  .burger { display: none; position: fixed; top: 26px; right: 14px; z-index: 30; padding: 8px; }
+  .burger span { display: block; width: 22px; height: 1.5px; background: var(--ink); margin: 5px 0; transition: transform .3s, opacity .3s; }
+  body.menu-open .burger span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  body.menu-open .burger span:nth-child(2) { opacity: 0; }
+  body.menu-open .burger span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* ---------- gallery views: one project per screen, photos in a sideways row ---------- */
+  .view { position: fixed; inset: 0; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; opacity: 0; transition: opacity .35s ease; }
+  .view.ready { opacity: 1; }
+  .view::-webkit-scrollbar { display: none; }
+  .project { position: relative; height: 100%; scroll-snap-align: start; overflow: hidden; }
+  .project[data-zone="left"]  { cursor: var(--cur-left); }
+  .project[data-zone="right"] { cursor: var(--cur-right); }
+  .project[data-zone="up"]    { cursor: var(--cur-up); }
+  .project[data-zone="down"]  { cursor: var(--cur-down); }
+  /* photo zone stays clear of the name + menu above and the project info below */
+  .track { position: absolute; top: max(18%, 184px); bottom: max(18%, 158px); left: 0; display: flex; gap: 5vw; transition: transform .75s var(--ease); will-change: transform; }
+  .slot { height: 100%; flex: none; display: flex; align-items: center; opacity: 0; transition: opacity .6s ease; }
+  .slot.on { opacity: 1; }
+  .slot.peek { opacity: .28; }
+  /* the peeking photo fades out to nothing towards the right edge; --solid animates so it eases in when it becomes current */
+  @property --solid { syntax: '<percentage>'; inherits: false; initial-value: 100%; }
+  .slot img { --solid: 100%; -webkit-mask-image: linear-gradient(to right, #000 var(--solid), transparent calc(var(--solid) + 85%)); mask-image: linear-gradient(to right, #000 var(--solid), transparent calc(var(--solid) + 85%)); transition: --solid .6s ease; }
+  .slot.peek img { --solid: 0%; }
+  .slot img { height: 100%; width: auto; max-width: calc(100vw - 2 * var(--edge)); object-fit: contain; display: block; user-select: none; -webkit-user-drag: none; }
+  .tag { position: absolute; top: calc(max(18%, 184px) - 26px); left: 50%; transform: translateX(-50%); font-size: 12px; font-style: italic; color: var(--ink-soft); }
+
+  /* ---------- view all ---------- */
+  .all { position: fixed; inset: 0; z-index: 40; background: var(--bg); overflow-y: auto; padding: 96px var(--edge) 80px; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+  body.all-open .all { opacity: 1; pointer-events: auto; }
+  .all-head { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: baseline; padding: 34px var(--edge) 20px; background: var(--bg); }
+  .all-head .name { font-size: 17px; }
+  .all-head button { font-size: 13px; color: var(--ink-soft); }
+  .all-head button:hover { color: var(--ink); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
+  .grid button { aspect-ratio: 4 / 3; overflow: hidden; }
+  .grid img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .2s; }
+  .grid button:hover img { opacity: .75; }
+
+  /* ---------- profile + contact ---------- */
+  .page-view { position: fixed; inset: 0; overflow-y: auto; display: flex; align-items: center; justify-content: center; padding: 120px var(--edge) 100px; opacity: 0; transition: opacity .35s ease; }
+  .page-view.ready { opacity: 1; }
+  .profile { display: flex; align-items: center; gap: 6vw; max-width: 1040px; }
+  .profile img { height: min(64vh, 560px); width: auto; max-width: 40vw; object-fit: cover; display: block; flex: none; }
+  .profile h1 { font-size: 17px; font-weight: 400; margin-bottom: 18px; }
+  .profile p { font-size: 14px; line-height: 1.7; max-width: 380px; margin-bottom: 12px; }
+  .contact { text-align: center; font-size: 17px; line-height: 2; }
+  .contact .label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+  .contact a:hover { color: var(--ink-soft); }
+
+  /* ---------- phone ---------- */
+  @media (max-width: 760px) {
+    :root { --edge: 20px; }
+    .brand-col { top: 26px; }
+    .brand { font-size: 19px; }
+    .menu { display: none; }
+    .burger { display: block; }
+    .radio { top: auto; bottom: 22px; right: var(--edge); }
+    .radio span { display: none; }
+    body.menu-open .menu { display: block; position: fixed; inset: 0; background: var(--bg); padding: 96px var(--edge) 0; margin: 0; z-index: -1; }
+    body.menu-open .menu li { font-size: 22px; line-height: 1.7; }
+    /* photo uses the full gap between the name bar and the project info */
+    .track { top: 92px; bottom: 200px; gap: 4vw; }
+    .tag { top: 66px; }
+    .info { width: auto; left: var(--edge); bottom: 68px; }
+    .info .name { font-size: 16px; }
+    .links { bottom: 28px; }
+    .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .profile { flex-direction: column; gap: 28px; align-items: flex-start; }
+    .profile img { height: auto; width: 100%; max-width: none; }
+    .page-view { align-items: flex-start; -webkit-mask-image: linear-gradient(to bottom, transparent 64px, #000 104px, #000 calc(100% - 96px), transparent calc(100% - 64px)); mask-image: linear-gradient(to bottom, transparent 64px, #000 104px, #000 calc(100% - 96px), transparent calc(100% - 64px)); }
+  }
+
+  /* short screens (phone held sideways, small laptop windows): tall photo, side columns kept clear */
+  @media (min-width: 761px) and (max-height: 620px) {
+    .track { top: 56px; bottom: 44px; }
+    .slot img { max-width: calc(100vw - 560px); }
+    .slot.peek { opacity: 0; }
+    .tag { top: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="brand-col">
+  <a class="brand" href="index.html">Saray Studio</a>
+  <ul class="menu">
+    <li><a href="#interiors" data-route="interiors">Interiors</a></li>
+    <li><a href="#products" data-route="products">Products</a></li>
+    <li><a href="#architecture" data-route="architecture">Architecture</a></li>
+  </ul>
+</div>
+<button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+
+<div class="radio" id="radio">
+  <span>Radio Saray</span>
+  <button type="button" aria-label="Play or pause Radio Saray">
+    <svg class="play" viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg>
+    <svg class="pause" viewBox="0 0 10 10"><rect x="2" y="1" width="2" height="8"/><rect x="6" y="1" width="2" height="8"/></svg>
+  </button>
+</div>
+<audio id="audio" preload="none"></audio>
+
+<div id="stage"></div>
+
+<div class="info" id="info" aria-live="polite">
+  <div class="name"></div>
+  <div class="place"></div>
+  <div class="year"></div>
+  <div class="row"><button type="button" id="viewAll">View all</button><span class="count"></span></div>
+</div>
+
+<nav class="links">
+  <a href="#profile" data-route="profile">Profile</a>
+  <a href="#contact" data-route="contact">Contact</a>
+  <a href="https://www.instagram.com/mohsen_masoodnia/" target="_blank" rel="noopener">Instagram</a>
+</nav>
+
+<div class="all" id="all" aria-hidden="true">
+  <div class="all-head"><span class="name"></span><button type="button" id="closeAll">Close</button></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+/* ================= content ================= */
+var DIMENSIONS = {"images/projects/casa-monastero/01.jpg":[1600,1132],
+  "images/projects/casa-monastero/02.jpg":[1131,1600],"images/projects/casa-monastero/03.jpg":[1600,1132],
+  "images/projects/coco/01.jpg":[1600,1144],"images/projects/mokab/01.jpg":[1484,1600],
+  "images/projects/mokab/02.jpg":[1445,1600],"images/projects/pool-house/01.jpg":[1600,1091],
+  "images/projects/pool-house/02.jpg":[1143,1600],"images/projects/pool-house/03.jpg":[1143,1600],
+  "images/projects/pool-house/04.jpg":[1143,1600],"images/projects/pool-house/05.jpg":[1143,1600],
+  "images/projects/pool-house/06.jpg":[1143,1600],"images/projects/pool-house/07.jpg":[1600,1143],
+  "images/projects/pool-house/08.jpg":[1143,1600],"images/projects/pool-house/09.jpg":[1143,1600],
+  "images/projects/pool-house/10.jpg":[1600,1143],"images/projects/pool-house/11.jpg":[1143,1600],
+  "images/projects/pool-house/12.jpg":[1200,1600],"images/projects/pool-house/13.jpg":[1143,1600],
+  "images/projects/private-club-milano/01.jpg":[1600,1600],"images/projects/private-club-milano/02.jpg":[1600,1600],
+  "images/projects/private-club-milano/03.jpg":[1600,1600],"images/projects/private-club-milano/04.jpg":[1600,1600],
+  "images/projects/private-residence-bergamo/01.jpg":[1376,768],
+  "images/projects/private-residence-bergamo/02.jpg":[1376,768],
+  "images/projects/private-residence-bergamo/03.jpg":[1376,768],
+  "images/projects/private-residence-bergamo/04.jpg":[1168,912],
+  "images/projects/private-residence-bergamo/05.jpg":[816,1312],
+  "images/projects/private-residence-milano/01.jpg":[1376,768],
+  "images/projects/private-residence-milano/02.jpg":[1376,768],
+  "images/projects/private-residence-milano/03.jpg":[1376,768],
+  "images/projects/private-residence-milano/04.jpg":[1376,768],
+  "images/projects/private-residence-milano/05.jpg":[928,1152],
+  "images/projects/private-residence-milano/06.jpg":[1376,768],
+  "images/projects/private-residence-milano/07.jpg":[1376,768],"images/projects/scogliera/01.jpg":[1143,1600],
+  "images/projects/scogliera/02.jpg":[1143,1600],"images/projects/scogliera/03.jpg":[1091,1600],
+  "images/projects/scogliera/04.jpg":[1143,1600],"images/projects/scogliera/05.jpg":[1143,1600],
+  "images/projects/scogliera/06.jpg":[1143,1600],"images/projects/scogliera/07.jpg":[1143,1600],
+  "images/projects/scogliera/08.jpg":[1143,1600],"images/projects/scogliera/09.jpg":[1143,1600],
+  "images/projects/scogliera/10.jpg":[1143,1600],"images/projects/scogliera/11.jpg":[1116,1600],
+  "images/projects/scogliera/12.jpg":[1143,1600],"images/projects/scogliera/13.jpg":[1143,1600],
+  "images/projects/settembrini/01.jpg":[1600,1200],"images/projects/settembrini/02.jpg":[1600,1067],
+  "images/projects/settembrini/03.jpg":[768,1152],"images/projects/settembrini/04.jpg":[1131,1600],
+  "images/projects/settembrini/05.jpg":[1131,1600],"images/projects/settembrini/06.jpg":[1600,1312],
+  "images/projects/settembrini/07.jpg":[1600,1311],"images/projects/settembrini/08.jpg":[1131,1600],
+  "images/projects/settembrini/09.jpg":[1131,1600],"images/projects/settembrini/10.jpg":[1131,1600],
+  "images/projects/settembrini/11.jpg":[1600,1131],"images/projects/settembrini/12.jpg":[1132,1600],
+  "images/projects/settembrini/13.jpg":[1132,1600],"images/projects/settembrini/14.jpg":[1132,1600],
+  "images/projects/settembrini/15.jpg":[1131,1600],"images/projects/settembrini/16.jpg":[1132,1600],
+  "images/projects/torre-23/01.jpg":[1490,918],"images/projects/torre-23/02.jpg":[1600,938],
+  "images/projects/torre-23/03.jpg":[1600,944],"images/projects/torre-23/04.jpg":[1600,960],
+  "images/projects/torre-23/05.jpg":[1600,900],"images/projects/torre-23/06.jpg":[1600,944],
+  "images/projects/villa-meygoon/01.jpg":[1600,900],"images/projects/villa-meygoon/02.jpg":[1600,900],
+  "images/projects/villa-meygoon/03.jpg":[1600,900],"images/projects/villa-meygoon/04.jpg":[1600,900],
+  "images/projects/villa-meygoon/05.jpg":[1600,900],"images/projects/villa-meygoon/06.jpg":[1600,900],
+  "images/projects/villa-meygoon/07.jpg":[1600,900],"images/projects/villa-meygoon/08.jpg":[1600,900],
+  "images/projects/villa-mombue/01.jpg":[1600,904],"images/projects/villa-mombue/02.jpg":[1600,900],
+  "images/projects/villa-mombue/03.jpg":[1600,900],"images/projects/villa-mombue/04.jpg":[788,1079],
+  "images/projects/villa-mombue/05.jpg":[1600,900],"images/projects/villa-mombue/06.jpg":[1600,900],
+  "images/projects/villa-mombue/07.jpg":[1600,900],"images/projects/villa-mombue/08.jpg":[1600,900],
+  "images/projects/villa-mombue/09.jpg":[1600,900],"images/projects/villa-mombue/10.jpg":[1250,1150],
+  "images/projects/villa-mombue/11.jpg":[1600,900],"images/projects/villa-mombue/12.jpg":[1600,900],
+  "images/projects/villa-mombue/13.jpg":[1600,900],"images/projects/villa-mombue/14.jpg":[1600,900],
+  "images/projects/villa-monastero/01.jpg":[1091,1600],"images/projects/villa-monastero/02.jpg":[1091,1600],
+  "images/projects/villa-monastero/03.jpg":[1091,1600],"images/projects/villa-monastero/04.jpg":[1091,1600],
+  "images/projects/villa-monastero/05.jpg":[1091,1600],"images/projects/villa-monastero/06.jpg":[1091,1600],
+  "images/projects/villa-monastero/07.jpg":[1091,1600],"images/projects/villa-monastero/08.jpg":[1091,1600],
+  "images/projects/villa-monastero/09.jpg":[1280,1600],"images/projects/villa-monastero/10.jpg":[1200,1600],
+  "images/projects/villa-monastero/11.jpg":[1143,1600],"images/villa-terra.jpg":[1600,900]};
+
+var GALLERIES = {
+  interiors: [
+    { name: 'Pool House',        place: 'Monferrato, Italy', year: '2024', dir: 'pool-house',               n: 13, credit: 'Photos Nicolò Panzeri' },
+    { name: 'Villa Monastero',   place: 'Monferrato, Italy', year: '2024', dir: 'villa-monastero',          n: 11 },
+    { name: 'Scogliera 84',      place: 'Liguria, Italy',    year: '2025', dir: 'scogliera',                n: 13 },
+    { name: 'Private Residence', place: 'Milano, Italy',     year: '2025', dir: 'private-residence-milano', n: 7 },
+    { name: 'Private Club',      place: 'Milano, Italy',     year: '2025', dir: 'private-club-milano',      n: 4 },
+    { name: 'Private Residence', place: 'Bergamo, Italy',    year: '2026', dir: 'private-residence-bergamo', n: 5 },
+    { name: 'Settembrini 9',     place: 'Milano, Italy',     year: '2025', dir: 'settembrini',              n: 16, note: 'In progress', credit: 'With CIVICO 64' },
+    { name: 'Torre 23',        place: 'Milano, Italy',     year: '2023', dir: 'torre-23',        n: 6 },
+    { name: 'Casa Monastero',  place: 'Monferrato, Italy', year: '2024', dir: 'casa-monastero',  n: 3 }
+  ],
+  architecture: [
+    { name: 'Villa Mombue',  place: 'Damavand, Iran', year: '2024', dir: 'villa-mombue',  n: 14 },
+    { name: 'Villa Meygoon', place: 'Meygoon, Iran',  year: '2022', dir: 'villa-meygoon', n: 8 },
+    { name: 'Villa Terra',   place: '',               year: '2022', images: [{ src: 'images/villa-terra.jpg' }] }
+  ],
+  products: [
+    { name: 'Mokab', place: 'Product', year: '2022', dir: 'mokab', n: 2 },
+    { name: 'Coco',  place: 'Product', year: '2021', dir: 'coco',  n: 1 }
+  ]
+};
+var ROUTES = ['interiors', 'architecture', 'products', 'profile', 'contact'];
+
+function photos(p) {
+  if (!p.list) {
+    p.list = p.images ? p.images.map(function (x) { return x.src; }) : [];
+    for (var i = 1; i <= (p.n || 0); i++) p.list.push('images/projects/' + p.dir + '/' + String(i).padStart(2, '0') + '.jpg');
+  }
+  return p.list;
+}
+
+/* ================= views ================= */
+var stage = document.getElementById('stage');
+var info = document.getElementById('info');
+var route = null, list = [], current = 0, view = null, io = null;
+
+function render(r) {
+  if (ROUTES.indexOf(r) < 0) r = 'interiors';
+  route = r;
+  document.querySelectorAll('[data-route]').forEach(function (a) { a.classList.toggle('active', a.dataset.route === r); });
+  document.body.classList.remove('menu-open', 'all-open');
+  if (io) io.disconnect();
+  stage.innerHTML = '';
+  if (r === 'profile' || r === 'contact') return renderPage(r);
+  document.body.classList.remove('page');
+  list = GALLERIES[r];
+  current = 0;
+  view = document.createElement('main');
+  view.className = 'view';
+  list.forEach(function (p, k) { view.appendChild(buildProject(p, k)); });
+  stage.appendChild(view);
+  io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { current = +e.target.dataset.k; paintInfo(); }
+    });
+  }, { root: view, threshold: 0.6 });
+  Array.prototype.forEach.call(view.children, function (s) { io.observe(s); });
+  paintInfo();
+  requestAnimationFrame(function () { view.classList.add('ready'); });
+}
+
+function renderPage(r) {
+  document.body.classList.add('page');
+  var el = document.createElement('main');
+  el.className = 'page-view';
+  el.innerHTML = r === 'profile'
+    ? '<section class="profile"><img src="images/profile.jpg" alt="Mohsen Masoudnia">' +
+        '<div><h1>Mohsen Masoudnia</h1>' +
+        '<p>Is an architect and interior designer with a strong foundation in both architectural technology and urban planning. Born in 1992 in Iran, he began his academic journey with a Bachelor’s degree in Technology of Architecture before moving to Italy to complete a Master’s in Architecture and Urban Planning at the Politecnico di Milano.</p>' +
+        '<p>Following his studies, he collaborated with some architecture and interior design studios in Milan, contributing to a variety of projects and creative initiatives.</p>' +
+        '<p>Today, he leads his own independent practice, focusing on private architectural and interior design projects across Italy.</p>' +
+        '<p>His approach is rooted in a comprehensive understanding of spatial design, with a focus on timeless aesthetics, contextual harmony, and meticulous attention to detail.</p>' +
+        '</div></section>'
+    : '<section class="contact"><div class="label">Write to us</div><a href="mailto:Info@saraystudio.it">Info@saraystudio.it</a></section>';
+  stage.appendChild(el);
+  requestAnimationFrame(function () { el.classList.add('ready'); });
+}
+
+function buildProject(p, k) {
+  var pics = photos(p);
+  p.idx = 0;
+  var sec = document.createElement('section');
+  sec.className = 'project';
+  sec.dataset.k = k;
+  var track = document.createElement('div');
+  track.className = 'track';
+  pics.forEach(function (s, i) {
+    var slot = document.createElement('div');
+    slot.className = 'slot';
+    var img = document.createElement('img');
+    img.alt = p.name + (p.place ? ', ' + p.place : '') + ', photo ' + (i + 1);
+    img.dataset.src = s;
+    // reserve the photo's real shape before it downloads, so the track is laid out
+    // correctly from the first frame instead of jumping once the image arrives
+    if (DIMENSIONS[s]) img.style.aspectRatio = DIMENSIONS[s][0] + ' / ' + DIMENSIONS[s][1];
+    img.onload = function () { if (sec.isConnected) place(sec); };
+    slot.appendChild(img);
+    track.appendChild(slot);
+  });
+  sec.appendChild(track);
+  if (p.note) sec.insertAdjacentHTML('beforeend', '<span class="tag">' + p.note + '</span>');
+
+  // cursor zones: top band = previous project, bottom band = next project, halves = photos
+  function zone(e) {
+    var r = sec.getBoundingClientRect(), y = (e.clientY - r.top) / r.height;
+    if (y < 0.16 && k > 0) return 'up';
+    if (y > 0.84 && k < list.length - 1) return 'down';
+    if (pics.length < 2) return '';
+    return e.clientX < r.left + r.width / 2 ? 'left' : 'right';
+  }
+  sec.addEventListener('mousemove', function (e) { sec.dataset.zone = zone(e); });
+  sec.addEventListener('mouseleave', function () { sec.dataset.zone = ''; });
+  sec.addEventListener('click', function (e) {
+    var z = zone(e);
+    if (z === 'left') step(k, -1);
+    else if (z === 'right') step(k, 1);
+    else if (z === 'up') goProject(k - 1);
+    else if (z === 'down') goProject(k + 1);
+  });
+
+  // swipe on phones
+  var x0 = null;
+  sec.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+  sec.addEventListener('touchend', function (e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 40) step(k, dx < 0 ? 1 : -1);
+    x0 = null;
+  });
+
+  load(sec, p);
+  place(sec, true);
+  return sec;
+}
+
+// only fetch the photo on screen, the faded one next to it, and the one before
+function load(sec, p) {
+  var imgs = sec.querySelectorAll('img');
+  [p.idx - 1, p.idx, p.idx + 1, p.idx + 2].forEach(function (i) {
+    var img = imgs[i];
+    if (img && !img.src) img.src = img.dataset.src;
+  });
+}
+
+// slide the row so the current photo sits in the middle; the next one peeks in, faded
+function place(sec, instant) {
+  var p = list[+sec.dataset.k];
+  var slots = sec.querySelectorAll('.slot');
+  slots.forEach(function (s, i) {
+    s.classList.toggle('on', i === p.idx);
+    s.classList.toggle('peek', i === p.idx + 1);
+  });
+  var cur = slots[p.idx];
+  if (!cur) return;
+  var x = sec.clientWidth / 2 - (cur.offsetLeft + cur.offsetWidth / 2);
+  var track = sec.querySelector('.track');
+  // first placement of a project (before it's ever been seen): snap instantly,
+  // no slide-in from the default left-aligned layout
+  if (instant) {
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(' + x + 'px)';
+    track.offsetHeight; // flush so the transition is really off for this frame
+    track.style.transition = '';
+  } else {
+    track.style.transform = 'translateX(' + x + 'px)';
+  }
+}
+
+function show(k, i) {
+  var p = list[k], n = photos(p).length;
+  p.idx = (i + n) % n;
+  if (k === current) paintInfo();
+  var sec = view.children[k];
+  load(sec, p);
+  // the counter above updates right away, but the photo itself only swaps once
+  // the new one has actually downloaded, so the current photo never drops out
+  // to a blank gap while the next one is still loading on a slower connection
+  var img = sec.querySelectorAll('img')[p.idx];
+  if (img && img.complete && img.naturalWidth) {
+    place(sec);
+  } else if (img) {
+    img.addEventListener('load', function onReady() {
+      if (sec.isConnected && list[+sec.dataset.k].idx === p.idx) place(sec);
+    }, { once: true });
+  }
+}
+function step(k, d) { show(k, list[k].idx + d); }
+
+function goProject(k) {
+  if (k < 0 || k >= list.length) return;
+  view.children[k].scrollIntoView({ behavior: 'smooth' });
+}
+
+function paintInfo() {
+  var p = list[current];
+  if (!p) return;
+  var n = photos(p).length;
+  info.querySelector('.name').textContent = p.name;
+  info.querySelector('.place').textContent = [p.place, p.credit].filter(Boolean).join(' · ');
+  info.querySelector('.year').textContent = p.year;
+  info.querySelector('.count').textContent = (p.idx + 1) + ' / ' + n;
+  document.getElementById('viewAll').style.visibility = n > 1 ? 'visible' : 'hidden';
+}
+
+window.addEventListener('resize', function () {
+  if (view) Array.prototype.forEach.call(view.children, place);
+});
+
+/* ================= view all ================= */
+var all = document.getElementById('all');
+var grid = document.getElementById('grid');
+function openAll() {
+  var p = list[current];
+  all.querySelector('.name').textContent = p.name;
+  grid.innerHTML = '';
+  photos(p).forEach(function (s, i) {
+    var b = document.createElement('button');
+    b.setAttribute('aria-label', p.name + ', photo ' + (i + 1));
+    b.innerHTML = '<img loading="lazy" alt="" src="' + s + '">';
+    b.onclick = function () { show(current, i); closeAll(); };
+    grid.appendChild(b);
+  });
+  all.scrollTop = 0;
+  document.body.classList.add('all-open');
+  all.setAttribute('aria-hidden', 'false');
+}
+function closeAll() {
+  document.body.classList.remove('all-open');
+  all.setAttribute('aria-hidden', 'true');
+}
+document.getElementById('viewAll').onclick = openAll;
+document.getElementById('closeAll').onclick = closeAll;
+
+/* ================= keyboard + menu ================= */
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') { closeAll(); document.body.classList.remove('menu-open'); return; }
+  if (document.body.classList.contains('all-open') || document.body.classList.contains('page')) return;
+  if (e.key === 'ArrowRight') step(current, 1);
+  if (e.key === 'ArrowLeft') step(current, -1);
+  if (e.key === 'ArrowDown') { e.preventDefault(); goProject(current + 1); }
+  if (e.key === 'ArrowUp') { e.preventDefault(); goProject(current - 1); }
+});
+document.querySelector('.burger').onclick = function () { document.body.classList.toggle('menu-open'); };
+window.addEventListener('hashchange', function () { render(location.hash.slice(1)); });
+render(location.hash.slice(1));
+
+/* ================= Radio Saray ================= */
+// Same five tracks as the homepage. Position is shared through sessionStorage,
+// so the radio picks up where the homepage left off.
+(function () {
+  var TRACKS = ['music/galate-oui.mp3', 'music/isaak.mp3', 'music/beautiful-friendship.mp3', 'music/line-up.mp3', 'music/joss-moog-wil.mp3'];
+  var KEY = 'saray-radio';
+  var audio = document.getElementById('audio');
+  var box = document.getElementById('radio');
+  var saved = {};
+  try { saved = JSON.parse(sessionStorage.getItem(KEY)) || {}; } catch (e) {}
+  var i = saved.i || 0;
+  var pending = null; // position handed over from the homepage, until the seek has landed
+  function save() {
+    var t = pending !== null ? pending : (audio.currentTime || 0);
+    try { sessionStorage.setItem(KEY, JSON.stringify({ i: i, t: t, playing: !audio.paused })); } catch (e) {}
+  }
+  function load(at) {
+    audio.src = TRACKS[i];
+    pending = at || null;
+    if (at) audio.addEventListener('loadedmetadata', function f() { audio.currentTime = at; pending = null; audio.removeEventListener('loadedmetadata', f); });
+  }
+  load(saved.t);
+  audio.addEventListener('ended', function () { i = (i + 1) % TRACKS.length; load(0); audio.play(); });
+  audio.addEventListener('play', function () { box.classList.add('playing'); save(); });
+  audio.addEventListener('pause', function () { box.classList.remove('playing'); save(); });
+  audio.addEventListener('timeupdate', save);
+  box.querySelector('button').onclick = function () { audio.paused ? audio.play() : audio.pause(); };
+  // browsers may block sound until the visitor clicks; if so the button just shows play
+  if (saved.playing) audio.play().catch(function () {});
+})();
+</script>
+</body>
+</html>

@@ -369,7 +369,7 @@
   <div class="hero-bg"></div>
 
   <nav>
-    <a href="interiors.html">Projects</a>
+    <a href="projects.html">Projects</a>
     <a href="#" id="closeStudio">Home</a>
     <a href="#" id="studioBtn">Studio</a>
     <a href="#" id="contactBtn">Contact</a>
@@ -443,6 +443,23 @@
     current = (current + 1) % tracks.length;
     loadAndPlay(current);
   });
+
+  // hand the track and position to projects.html so the radio carries on there
+  let pendingT = null; // restored position, kept until the seek has landed
+  function saveRadio() {
+    const t = pendingT !== null ? pendingT : (audio.currentTime || 0);
+    try { sessionStorage.setItem('saray-radio', JSON.stringify({ i: current, t: t, playing: !audio.paused })); } catch (e) {}
+  }
+  ['timeupdate', 'play', 'pause'].forEach(ev => audio.addEventListener(ev, saveRadio));
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('saray-radio'));
+    if (saved && saved.t) {
+      current = saved.i || 0;
+      pendingT = saved.t;
+      audio.src = tracks[current];
+      audio.addEventListener('loadedmetadata', () => { audio.currentTime = saved.t; pendingT = null; }, { once: true });
+    }
+  } catch (e) {}
 
   btn.addEventListener('click', () => {
     if (audio.paused) {
