@@ -53,6 +53,8 @@
     }
 
     nav a:hover { opacity: 0.55; }
+    .lang-switch a { opacity: .45; transition: opacity .2s; }
+    .lang-switch a.active { opacity: 1; }
     .nav-locked { pointer-events: none; cursor: default; }
 
     .menu-wrap { position: relative; }
@@ -392,12 +394,12 @@
         <a href="projects.html#interiors" data-i18n="nav.interiors">Interiors</a>
         <a href="projects.html#architecture" data-i18n="nav.architecture">Architecture</a>
         <a href="projects.html#products" data-i18n="nav.products">Products</a>
-        <a href="#" data-lang-toggle>Italiano</a>
       </div>
     </div>
     <a href="#" id="closeStudio" data-i18n="nav.home">Home</a>
     <a href="#" id="studioBtn" data-i18n="nav.studio">Studio</a>
     <a href="#" id="contactBtn" data-i18n="nav.contact">Contact</a>
+    <span class="lang-switch"><a href="#" data-lang-set="en">EN</a> / <a href="#" data-lang-set="it">IT</a></span>
   </nav>
 
   <div id="contactOverlay">

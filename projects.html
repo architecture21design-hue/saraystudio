@@ -46,6 +46,9 @@
   .menu-wrap.open .submenu { opacity: 1; pointer-events: auto; transform: translateY(0); }
   .submenu a { font-size: 11px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); transition: opacity .2s; }
   .submenu a:hover { opacity: 0.55; }
+  .lang-switch { font-size: 11px; font-weight: 400; letter-spacing: 0.14em; color: var(--ink); }
+  .lang-switch a { opacity: .45; transition: opacity .2s; }
+  .lang-switch a.active { opacity: 1; }
   .submenu a.active { opacity: 0.55; }
 
   .radio { position: fixed; top: 76px; right: var(--edge); z-index: 20; display: flex; align-items: center; gap: 12px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
@@ -142,12 +145,12 @@
       <a href="#interiors" data-route="interiors" data-i18n="nav.interiors">Interiors</a>
       <a href="#architecture" data-route="architecture" data-i18n="nav.architecture">Architecture</a>
       <a href="#products" data-route="products" data-i18n="nav.products">Products</a>
-      <a href="#" data-lang-toggle>Italiano</a>
     </div>
   </div>
   <a href="index.html" data-i18n="nav.home">Home</a>
   <a href="index.html#studio" data-i18n="nav.studio">Studio</a>
   <a href="#contact" data-route="contact" data-i18n="nav.contact">Contact</a>
+  <span class="lang-switch"><a href="#" data-lang-set="en">EN</a> / <a href="#" data-lang-set="it">IT</a></span>
 </nav>
 
 <div class="radio" id="radio">

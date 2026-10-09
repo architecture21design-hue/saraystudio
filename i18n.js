@@ -26,8 +26,7 @@
       'gallery.close': 'Chiudi',
       'gallery.photo': 'foto',
       'meta.title': 'Saray Studio',
-      'meta.desc': 'Interni, architettura e prodotti di Saray Studio, Milano.',
-      'lang.toggle': 'English'
+      'meta.desc': 'Interni, architettura e prodotti di Saray Studio, Milano.'
     }
   };
   var DYN = {
@@ -42,7 +41,6 @@
       'Photos Nicolò Panzeri': 'Foto Nicolò Panzeri'
     }
   };
-  var EN_TOGGLE = 'Italiano';
   var lang = 'en';
   try { var s = localStorage.getItem(KEY); if (s === 'it' || s === 'en') lang = s; } catch (e) {}
 
@@ -80,9 +78,10 @@
       desc.setAttribute('content', t('meta.desc') || enD);
     }
     document.title = t('meta.title') || 'Saray Studio';
-    document.querySelectorAll('[data-lang-toggle]').forEach(function (el) {
-      el.textContent = lang === 'en' ? EN_TOGGLE : T.it['lang.toggle'];
-      el.setAttribute('lang', lang === 'en' ? 'it' : 'en');
+    document.querySelectorAll('[data-lang-set]').forEach(function (el) {
+      var on = el.dataset.langSet === lang;
+      el.classList.toggle('active', on);
+      el.setAttribute('aria-current', on ? 'true' : 'false');
     });
   }
   function set(l) {
@@ -92,10 +91,10 @@
     document.dispatchEvent(new CustomEvent('saray-lang', { detail: lang }));
   }
   document.addEventListener('click', function (e) {
-    var el = e.target.closest && e.target.closest('[data-lang-toggle]');
+    var el = e.target.closest && e.target.closest('[data-lang-set]');
     if (!el) return;
     e.preventDefault();
-    set(lang === 'en' ? 'it' : 'en');
+    set(el.dataset.langSet);
   });
   window.SarayI18n = { t: t, tr: tr, apply: apply, set: set, get: function () { return lang; } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
