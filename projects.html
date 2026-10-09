@@ -310,7 +310,7 @@ function renderPage(r) {
   document.body.classList.add('page');
   var el = document.createElement('main');
   el.className = 'page-view';
-  el.innerHTML = '<section class="contact"><div class="label" data-i18n="contact.label">Write to us</div><a href="mailto:Info@saraystudio.it">Info@saraystudio.it</a><br><a href="tel:+393491183884">+39 349 118 3884</a></section>';
+  el.innerHTML = '<section class="contact"><div class="label" data-i18n="contact.label">Write to us</div><div data-i18n="contact.address">Milan, Brera</div><a href="mailto:Info@saraystudio.it">Info@saraystudio.it</a><br><a href="tel:+393491183884">+39 349 118 3884</a></section>';
   stage.appendChild(el);
   SarayI18n.apply();
   requestAnimationFrame(function () { el.classList.add('ready'); });

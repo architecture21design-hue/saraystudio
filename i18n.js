@@ -24,6 +24,7 @@
       'studio.alt': 'Mohsen Masoudnia e Parisa Sayadifar, fondatori di Saray Studio',
       'studio.scroll': 'Scorri',
       'contact.label': 'Scriveteci',
+      'contact.address': 'Milano, Brera',
       'radio.play': 'Riproduci',
       'radio.playpause': 'Riproduci o metti in pausa Radio Saray',
       'gallery.viewall': 'Vedi tutto',
