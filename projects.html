@@ -135,28 +135,30 @@
 
 <nav class="topnav">
   <div class="menu-wrap" id="menuWrap">
-    <button type="button" class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false">
+    <button type="button" class="menu-toggle" id="menuToggle" aria-label="Menu" data-i18n-aria="nav.menu" aria-expanded="false">
       <span></span><span></span>
     </button>
     <div class="submenu" id="submenu">
-      <a href="#interiors" data-route="interiors">Interiors</a>
-      <a href="#architecture" data-route="architecture">Architecture</a>
-      <a href="#products" data-route="products">Products</a>
+      <a href="#interiors" data-route="interiors" data-i18n="nav.interiors">Interiors</a>
+      <a href="#architecture" data-route="architecture" data-i18n="nav.architecture">Architecture</a>
+      <a href="#products" data-route="products" data-i18n="nav.products">Products</a>
+      <a href="#" data-lang-toggle>Italiano</a>
     </div>
   </div>
-  <a href="index.html">Home</a>
-  <a href="index.html#studio">Studio</a>
-  <a href="#contact" data-route="contact">Contact</a>
+  <a href="index.html" data-i18n="nav.home">Home</a>
+  <a href="index.html#studio" data-i18n="nav.studio">Studio</a>
+  <a href="#contact" data-route="contact" data-i18n="nav.contact">Contact</a>
 </nav>
 
 <div class="radio" id="radio">
   <span>Radio Saray</span>
-  <button type="button" aria-label="Play or pause Radio Saray">
+  <button type="button" aria-label="Play or pause Radio Saray" data-i18n-aria="radio.playpause">
     <svg class="play" viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg>
     <svg class="pause" viewBox="0 0 10 10"><rect x="2" y="1" width="2" height="8"/><rect x="6" y="1" width="2" height="8"/></svg>
   </button>
 </div>
 <audio id="audio" preload="none"></audio>
+<script src="i18n.js"></script>
 
 <div id="stage"></div>
 
@@ -164,11 +166,11 @@
   <div class="name"></div>
   <div class="place"></div>
   <div class="year"></div>
-  <div class="row"><button type="button" id="viewAll">View all</button><span class="count"></span></div>
+  <div class="row"><button type="button" id="viewAll" data-i18n="gallery.viewall">View all</button><span class="count"></span></div>
 </div>
 
 <div class="all" id="all" aria-hidden="true">
-  <div class="all-head"><span class="name"></span><button type="button" id="closeAll">Close</button></div>
+  <div class="all-head"><span class="name"></span><button type="button" id="closeAll" data-i18n="gallery.close">Close</button></div>
   <div class="grid" id="grid"></div>
 </div>
 
@@ -305,11 +307,16 @@ function renderPage(r) {
   document.body.classList.add('page');
   var el = document.createElement('main');
   el.className = 'page-view';
-  el.innerHTML = '<section class="contact"><div class="label">Write to us</div><a href="mailto:Info@saraystudio.it">Info@saraystudio.it</a><br><a href="tel:+393491183884">+39 349 118 3884</a></section>';
+  el.innerHTML = '<section class="contact"><div class="label" data-i18n="contact.label">Write to us</div><a href="mailto:Info@saraystudio.it">Info@saraystudio.it</a><br><a href="tel:+393491183884">+39 349 118 3884</a></section>';
   stage.appendChild(el);
+  SarayI18n.apply();
   requestAnimationFrame(function () { el.classList.add('ready'); });
 }
 
+function altFor(p, i) {
+  var I = SarayI18n;
+  return I.tr(p.name) + (p.place ? ', ' + I.tr(p.place) : '') + ', ' + (I.t('gallery.photo') || 'photo') + ' ' + (i + 1);
+}
 function buildProject(p, k) {
   var pics = photos(p);
   p.idx = 0;
@@ -322,7 +329,7 @@ function buildProject(p, k) {
     var slot = document.createElement('div');
     slot.className = 'slot';
     var img = document.createElement('img');
-    img.alt = p.name + (p.place ? ', ' + p.place : '') + ', photo ' + (i + 1);
+    img.alt = altFor(p, i);
     img.dataset.src = s;
     // reserve the photo's real shape before it downloads, so the track is laid out
     // correctly from the first frame instead of jumping once the image arrives
@@ -429,8 +436,8 @@ function paintInfo() {
   var p = list[current];
   if (!p) return;
   var n = photos(p).length;
-  info.querySelector('.name').textContent = p.name;
-  info.querySelector('.place').textContent = [p.place, p.credit].filter(Boolean).join(' · ');
+  info.querySelector('.name').textContent = SarayI18n.tr(p.name);
+  info.querySelector('.place').textContent = [p.place, p.credit].filter(Boolean).map(SarayI18n.tr).join(' · ');
   info.querySelector('.year').textContent = p.year;
   info.querySelector('.count').textContent = (p.idx + 1) + ' / ' + n;
   document.getElementById('viewAll').style.visibility = n > 1 ? 'visible' : 'hidden';
@@ -445,11 +452,11 @@ var all = document.getElementById('all');
 var grid = document.getElementById('grid');
 function openAll() {
   var p = list[current];
-  all.querySelector('.name').textContent = p.name;
+  all.querySelector('.name').textContent = SarayI18n.tr(p.name);
   grid.innerHTML = '';
   photos(p).forEach(function (s, i) {
     var b = document.createElement('button');
-    b.setAttribute('aria-label', p.name + ', photo ' + (i + 1));
+    b.setAttribute('aria-label', altFor(p, i));
     b.innerHTML = '<img loading="lazy" alt="" src="' + s + '">';
     b.onclick = function () { show(current, i); closeAll(); };
     grid.appendChild(b);
@@ -486,6 +493,15 @@ document.addEventListener('keydown', function (e) {
   if (e.key === 'ArrowLeft') step(current, -1);
   if (e.key === 'ArrowDown') { e.preventDefault(); goProject(current + 1); }
   if (e.key === 'ArrowUp') { e.preventDefault(); goProject(current - 1); }
+});
+// language switch: repaint text in place, keep the visitor where they are
+document.addEventListener('saray-lang', function () {
+  if (route === 'contact') return;
+  paintInfo();
+  list.forEach(function (p, k) {
+    view.children[k].querySelectorAll('img').forEach(function (img, i) { img.alt = altFor(p, i); });
+  });
+  if (document.body.classList.contains('all-open')) all.querySelector('.name').textContent = SarayI18n.tr(list[current].name);
 });
 window.addEventListener('hashchange', function () { render(location.hash.slice(1)); });
 render(location.hash.slice(1));

@@ -385,18 +385,19 @@
 
   <nav>
     <div class="menu-wrap" id="menuWrap">
-      <button type="button" class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false">
+      <button type="button" class="menu-toggle" id="menuToggle" aria-label="Menu" data-i18n-aria="nav.menu" aria-expanded="false">
         <span></span><span></span>
       </button>
       <div class="submenu" id="submenu">
-        <a href="projects.html#interiors">Interiors</a>
-        <a href="projects.html#architecture">Architecture</a>
-        <a href="projects.html#products">Products</a>
+        <a href="projects.html#interiors" data-i18n="nav.interiors">Interiors</a>
+        <a href="projects.html#architecture" data-i18n="nav.architecture">Architecture</a>
+        <a href="projects.html#products" data-i18n="nav.products">Products</a>
+        <a href="#" data-lang-toggle>Italiano</a>
       </div>
     </div>
-    <a href="#" id="closeStudio">Home</a>
-    <a href="#" id="studioBtn">Studio</a>
-    <a href="#" id="contactBtn">Contact</a>
+    <a href="#" id="closeStudio" data-i18n="nav.home">Home</a>
+    <a href="#" id="studioBtn" data-i18n="nav.studio">Studio</a>
+    <a href="#" id="contactBtn" data-i18n="nav.contact">Contact</a>
   </nav>
 
   <div id="contactOverlay">
@@ -407,7 +408,7 @@
   </div>
 
   <div class="hero-message">
-    <p>We invite you to enjoy RADIOSARAY by clicking the player in the corner as you explore the website.</p>
+    <p data-i18n="hero.message">We invite you to enjoy RADIOSARAY by clicking the player in the corner as you explore the website.</p>
   </div>
 
   <div class="hero-title">
@@ -416,7 +417,7 @@
 
   <div class="bottom-bar">
     <span class="radio-label">Radiosaray</span>
-    <button class="play-btn" id="playBtn" aria-label="Play">
+    <button class="play-btn" id="playBtn" aria-label="Play" data-i18n-aria="radio.play">
       <svg id="iconPlay" viewBox="0 0 10 10"><polygon points="1,0 10,5 1,10"/></svg>
       <svg id="iconPause" viewBox="0 0 10 10" style="display:none"><rect x="1" y="0" width="3" height="10"/><rect x="6" y="0" width="3" height="10"/></svg>
     </button>
@@ -425,24 +426,25 @@
 
   <div id="studioView">
     <div class="studio-layer studio-image">
-      <img src="images/studio-portrait.webp" alt="Mohsen Masoudnia and Parisa Sayadifar, founders of Saray Studio" />
+      <img src="images/studio-portrait.webp" alt="Mohsen Masoudnia and Parisa Sayadifar, founders of Saray Studio" data-i18n-alt="studio.alt" />
     </div>
 
     <div class="studio-layer studio-text">
       <div class="studio-copy">
-        <div class="studio-eyebrow">The Studio</div>
+        <div class="studio-eyebrow" data-i18n="studio.eyebrow">The Studio</div>
         <div class="studio-body">
-        <p class="l1"><span class="brand">SARAY</span> is a private house of design founded by Mohsen Masoudnia and Parisa Sayadifar. A refined expression of quiet luxury, <span class="brand">SARAY</span> brings together interior architecture, bespoke furniture, and exceptional craftsmanship to create spaces of enduring character.</p>
-        <p class="l2">More than a design destination, <span class="brand">SARAY</span> is a place of warmth, discretion, and considered detail, an invitation to experience design with intention, elegance, and a lasting sense of belonging.</p>
+        <p class="l1" data-i18n-html="studio.p1"><span class="brand">SARAY</span> is a private house of design founded by Mohsen Masoudnia and Parisa Sayadifar. A refined expression of quiet luxury, <span class="brand">SARAY</span> brings together interior architecture, bespoke furniture, and exceptional craftsmanship to create spaces of enduring character.</p>
+        <p class="l2" data-i18n-html="studio.p2">More than a design destination, <span class="brand">SARAY</span> is a place of warmth, discretion, and considered detail, an invitation to experience design with intention, elegance, and a lasting sense of belonging.</p>
         </div>
       </div>
     </div>
 
-    <div class="scroll-hint">Scroll</div>
+    <div class="scroll-hint" data-i18n="studio.scroll">Scroll</div>
     <div class="studio-track"></div>
   </div>
 
 <audio id="player"></audio>
+<script src="i18n.js"></script>
 
 <script>
   const tracks = [
