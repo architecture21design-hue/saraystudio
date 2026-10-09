@@ -15,21 +15,22 @@
   <div class="nav-inner">
     <a class="brand" href="index.html">Mohsen Masoudnia</a>
     <nav><ul class="nav-links">
-      <li><a href="profile.html">Profile</a></li>
-      <li><a href="interiors.html">Interiors</a></li>
-      <li><a href="architecture.html">Architecture</a></li>
-      <li><a href="products.html">Products</a></li>
-      <li><a href="contacts.html">Contacts</a></li>
+      <li><a href="profile.html" data-i18n="nav.profile">Profile</a></li>
+      <li><a href="interiors.html" data-i18n="nav.interiors">Interiors</a></li>
+      <li><a href="architecture.html" data-i18n="nav.architecture">Architecture</a></li>
+      <li><a href="products.html" data-i18n="nav.products">Products</a></li>
+      <li><a href="contacts.html" data-i18n="nav.contacts">Contacts</a></li>
       <li><a href="https://www.instagram.com/mohsen_masoodnia/" target="_blank" rel="noopener">Instagram</a></li>
+      <li class="lang-switch"><a href="#" data-lang-set="en">EN</a> / <a href="#" data-lang-set="it">IT</a></li>
     </ul></nav>
     <button class="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </header>
 <main class="project-page" data-screen-label="Villa Meygoon">
   <div class="project-head">
-    <a class="back" href="interiors.html" id="proj-back">Back to Interiors</a>
+    <a class="back" href="interiors.html" id="proj-back" data-i18n="back.interiors">Back to Interiors</a>
     <h1>Villa Meygoon</h1>
-    <div class="meta">Meygoon, Iran<br />2022</div>
+    <div class="meta" data-i18n-lines>Meygoon, Iran<br />2022</div>
   </div>
   <div class="project-gallery">
     <img src="images/projects/villa-meygoon/01.jpg" alt="Villa Meygoon 1" loading="lazy" />
@@ -42,6 +43,7 @@
     <img src="images/projects/villa-meygoon/08.jpg" alt="Villa Meygoon 8" loading="lazy" />
   </div>
 </main>
+<script src="i18n.js"></script>
 <script src="site.js"></script>
 <script>
 (function(){

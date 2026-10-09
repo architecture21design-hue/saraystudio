@@ -13,6 +13,10 @@
       'nav.studio': 'Studio',
       'nav.contact': 'Contatti',
       'nav.menu': 'Menu',
+      'nav.profile': 'Profilo',
+      'nav.contacts': 'Contatti',
+      'back.interiors': 'Torna a Interni',
+      'back.products': 'Torna a Prodotti',
       'hero.message': 'Vi invitiamo a godere di RADIOSARAY cliccando sul player nell’angolo mentre esplorate il sito.',
       'studio.eyebrow': 'Lo Studio',
       'studio.p1': '<span class="brand">SARAY</span> è una casa privata del design fondata da Mohsen Masoudnia e Parisa Sayadifar. Un’espressione raffinata di quiet luxury, <span class="brand">SARAY</span> unisce architettura d’interni, arredi su misura e artigianato d’eccezione per creare spazi dal carattere duraturo.',
@@ -25,7 +29,6 @@
       'gallery.viewall': 'Vedi tutto',
       'gallery.close': 'Chiudi',
       'gallery.photo': 'foto',
-      'meta.title': 'Saray Studio',
       'meta.desc': 'Interni, architettura e prodotti di Saray Studio, Milano.'
     }
   };
@@ -38,6 +41,9 @@
       'Liguria, Italy': 'Liguria, Italia',
       'Bergamo, Italy': 'Bergamo, Italia',
       'Product': 'Prodotto',
+      'Collaboration with CIVICO 64': 'In collaborazione con CIVICO 64',
+      'Featuring a plush cotton backrest and cushion, crafted with a solid walnut wood frame.': 'Schienale e cuscino in morbido cotone, struttura in legno massello di noce.',
+      'Featuring a plush cotton backrest and cushion, crafted with a solid mahogany wood frame.': 'Schienale e cuscino in morbido cotone, struttura in legno massello di mogano.',
       'Photos Nicolò Panzeri': 'Foto Nicolò Panzeri'
     }
   };
@@ -72,12 +78,15 @@
       var en = remember(el, 'alt', function (e) { return e.getAttribute('alt'); });
       el.setAttribute('alt', t(el.dataset.i18nAlt) || en);
     });
+    document.querySelectorAll('[data-i18n-lines]').forEach(function (el) {
+      var en = remember(el, 'lines', function (e) { return e.innerHTML; });
+      el.innerHTML = en.split(/<br\s*\/?>/i).map(function (l) { return tr(l.trim()); }).join('<br>');
+    });
     var desc = document.querySelector('meta[name="description"]');
     if (desc) {
       var enD = remember(desc, 'content', function (e) { return e.getAttribute('content'); });
       desc.setAttribute('content', t('meta.desc') || enD);
     }
-    document.title = t('meta.title') || 'Saray Studio';
     document.querySelectorAll('[data-lang-set]').forEach(function (el) {
       var on = el.dataset.langSet === lang;
       el.classList.toggle('active', on);
