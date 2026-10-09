@@ -292,7 +292,7 @@ function renderPage(r) {
   document.body.classList.add('page');
   var el = document.createElement('main');
   el.className = 'page-view';
-  el.innerHTML = '<section class="contact"><div class="label">Write to us</div><a href="mailto:Info@saraystudio.it">Info@saraystudio.it</a></section>';
+  el.innerHTML = '<section class="contact"><div class="label">Write to us</div><a href="mailto:Info@saraystudio.it">Info@saraystudio.it</a><br><a href="tel:+393491183884">+39 349 118 3884</a></section>';
   stage.appendChild(el);
   requestAnimationFrame(function () { el.classList.add('ready'); });
 }
